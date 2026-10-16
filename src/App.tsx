@@ -7,37 +7,64 @@ import { RealtimeCharts } from './components/RealtimeMonitoring/RealtimeCharts'
 import { ConcentradoresTable } from './components/RealtimeMonitoring/ConcentradoresTable'
 import { BottomNavMobile } from './components/Mobile/BottomNavMobile'
 import { SectionViews } from './components/Views/SectionViews'
+import { LoginPage } from './components/Auth/LoginPage'
+import { supabase } from './lib/supabase'
 import {
   initialMetrics,
   mockConcentradores,
   generateChartSeries,
 } from './data/mockData'
-import type { ActiveRoute, TimeInterval, DashboardMetrics } from './types/dashboard'
+import type { ActiveRoute, TimeInterval, DashboardMetrics, Concentrador } from './types/dashboard'
+
+interface UserSession {
+  email: string
+  name: string
+}
 
 export function App() {
   // 1. Theme State (Default to Dark Mode as explicitly requested by user)
   const [isDarkMode, setIsDarkMode] = useState(true)
 
-  // 2. Sidebar & Navigation State
+  // 2. Authentication State (Supabase Auth / Local Session)
+  const [currentUser, setCurrentUser] = useState<UserSession | null>(() => {
+    try {
+      const saved = localStorage.getItem('wfv_admin_session')
+      return saved ? JSON.parse(saved) : null
+    } catch {
+      return null
+    }
+  })
+
+  // 3. Mode: REAL PRODUCTION by default (test data removed) vs DEMO
+  const [isDemoMode, setIsDemoMode] = useState(false)
+
+  // 4. Sidebar & Navigation State
   const [activeRoute, setActiveRoute] = useState<ActiveRoute>('inicio')
   const [isPinned, setIsPinned] = useState(true)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
 
-  // 3. Metrics & Live Monitoring State
-  const [metrics, setMetrics] = useState<DashboardMetrics>(initialMetrics)
+  // 5. Real Concentradores from Local Storage / Database
+  const [realConcentradores, setRealConcentradores] = useState<Concentrador[]>(() => {
+    try {
+      const saved = localStorage.getItem('wfv_real_concentradores')
+      return saved ? JSON.parse(saved) : []
+    } catch {
+      return []
+    }
+  })
+
+  // 6. Metrics & Intervals
   const [hotspotInterval, setHotspotInterval] = useState<TimeInterval>('24h')
   const [equipInterval, setEquipInterval] = useState<TimeInterval>('24h')
-
-  const [hotspotChartData, setHotspotChartData] = useState(
-    generateChartSeries('24h').hotspot
-  )
-  const [equipChartData, setEquipChartData] = useState(
-    generateChartSeries('24h').equip
-  )
-
-  const [isLiveSimulating, setIsLiveSimulating] = useState(true)
   const [isRefreshing, setIsRefreshing] = useState(false)
-  const [isZeroMode, setIsZeroMode] = useState(false)
+  const [currentTimeStr, setCurrentTimeStr] = useState(() =>
+    new Date().toLocaleTimeString('pt-BR')
+  )
+
+  // Demo simulation state (only active when user explicitly toggles Demo mode)
+  const [demoMetrics, setDemoMetrics] = useState<DashboardMetrics>(initialMetrics)
+  const [demoHotspotData, setDemoHotspotData] = useState(generateChartSeries('24h').hotspot)
+  const [demoEquipData, setDemoEquipData] = useState(generateChartSeries('24h').equip)
 
   // Synchronize Dark Mode class on document
   useEffect(() => {
@@ -48,76 +75,111 @@ export function App() {
     }
   }, [isDarkMode])
 
-  // Recalculate chart data on interval change
+  // Check Supabase session on mount
   useEffect(() => {
-    setHotspotChartData(generateChartSeries(hotspotInterval).hotspot)
-  }, [hotspotInterval])
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        const user: UserSession = {
+          email: session.user.email || 'admin@wfvadmin.com',
+          name:
+            session.user.user_metadata?.name ||
+            (session.user.email?.includes('cristiano') ? 'Cristiano Martins' : 'Administrador WFV'),
+        }
+        setCurrentUser(user)
+        localStorage.setItem('wfv_admin_session', JSON.stringify(user))
+      }
+    })
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        const user: UserSession = {
+          email: session.user.email || 'admin@wfvadmin.com',
+          name:
+            session.user.user_metadata?.name ||
+            (session.user.email?.includes('cristiano') ? 'Cristiano Martins' : 'Administrador WFV'),
+        }
+        setCurrentUser(user)
+        localStorage.setItem('wfv_admin_session', JSON.stringify(user))
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  // Keep live clock updated
+  useEffect(() => {
+    const clockTimer = setInterval(() => {
+      setCurrentTimeStr(new Date().toLocaleTimeString('pt-BR'))
+    }, 1000)
+    return () => clearInterval(clockTimer)
+  }, [])
+
+  // Update demo charts if interval changes
+  useEffect(() => {
+    if (isDemoMode) {
+      setDemoHotspotData(generateChartSeries(hotspotInterval).hotspot)
+    }
+  }, [hotspotInterval, isDemoMode])
 
   useEffect(() => {
-    setEquipChartData(generateChartSeries(equipInterval).equip)
-  }, [equipInterval])
+    if (isDemoMode) {
+      setDemoEquipData(generateChartSeries(equipInterval).equip)
+    }
+  }, [equipInterval, isDemoMode])
 
   // Manual Refresh Handler
   const handleManualRefresh = useCallback(() => {
     setIsRefreshing(true)
-    const now = new Date()
-    const timeStr = now.toLocaleTimeString('pt-BR')
+    const timeStr = new Date().toLocaleTimeString('pt-BR')
+    setCurrentTimeStr(timeStr)
 
     setTimeout(() => {
-      setMetrics((prev) => ({
-        ...prev,
-        hotspot_online: Math.max(90, prev.hotspot_online + Math.floor(Math.random() * 7 - 3)),
-        pppoe_online: Math.max(60, prev.pppoe_online + Math.floor(Math.random() * 5 - 2)),
-        last_update: timeStr,
-      }))
+      if (isDemoMode) {
+        setDemoMetrics((prev) => ({
+          ...prev,
+          hotspot_online: Math.max(90, prev.hotspot_online + Math.floor(Math.random() * 7 - 3)),
+          pppoe_online: Math.max(60, prev.pppoe_online + Math.floor(Math.random() * 5 - 2)),
+          last_update: timeStr,
+        }))
+      }
       setIsRefreshing(false)
     }, 400)
-  }, [])
+  }, [isDemoMode])
 
-  // Live Real-Time simulation heartbeat
-  useEffect(() => {
-    if (!isLiveSimulating) return
+  // Add Real Concentrador
+  const handleAddRealConcentrador = (newDevice: Concentrador) => {
+    const updated = [newDevice, ...realConcentradores]
+    setRealConcentradores(updated)
+    try {
+      localStorage.setItem('wfv_real_concentradores', JSON.stringify(updated))
+    } catch {
+      // LocalStorage quota fallback
+    }
+  }
 
-    const timer = setInterval(() => {
-      const now = new Date()
-      const timeStr = now.toLocaleTimeString('pt-BR')
+  // Delete Real Concentrador
+  const handleDeleteRealConcentrador = (id: string) => {
+    const updated = realConcentradores.filter((c) => c.id !== id)
+    setRealConcentradores(updated)
+    try {
+      localStorage.setItem('wfv_real_concentradores', JSON.stringify(updated))
+    } catch {
+      // LocalStorage quota fallback
+    }
+  }
 
-      setMetrics((prev) => {
-        // Natural slight jitter in online sessions
-        const deltaHotspot = Math.floor(Math.random() * 5) - 2
-        const deltaPppoe = Math.floor(Math.random() * 3) - 1
-
-        const nextHotspot = Math.max(50, prev.hotspot_online + deltaHotspot)
-        const nextPppoe = Math.max(40, prev.pppoe_online + deltaPppoe)
-
-        return {
-          ...prev,
-          hotspot_online: nextHotspot,
-          pppoe_online: nextPppoe,
-          last_update: timeStr,
-        }
-      })
-
-      // Update the latest point on hotspot chart
-      setHotspotChartData((prev) => {
-        if (!prev || prev.length === 0) return prev
-        const updated = [...prev]
-        const last = updated[updated.length - 1]
-        const hour = now.getHours().toString().padStart(2, '0')
-        const min = now.getMinutes().toString().padStart(2, '0')
-        const sec = now.getSeconds().toString().padStart(2, '0')
-
-        updated[updated.length - 1] = {
-          ...last,
-          date_time: `${hour}:${min}:${sec}`,
-          value: Math.max(30, last.value + (Math.floor(Math.random() * 5) - 2)),
-        }
-        return updated
-      })
-    }, 4000)
-
-    return () => clearInterval(timer)
-  }, [isLiveSimulating])
+  // Handle Logout
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut()
+    } catch {
+      // Offline fallback
+    }
+    localStorage.removeItem('wfv_admin_session')
+    setCurrentUser(null)
+  }
 
   const scrollToConcentradoresTable = () => {
     const el = document.getElementById('ov-tabela-concentradores')
@@ -126,20 +188,31 @@ export function App() {
     }
   }
 
-  // Displayed metrics and datasets (allowing instant switch between populated live demo and exact video recording blank state)
-  const displayedMetrics = isZeroMode
-    ? {
-        hotspot_online: 0,
-        pppoe_online: 0,
-        concentradores_online: 0,
-        total_concentradores: 0,
-        last_update: '06:48:44',
-      }
-    : metrics
+  // Calculate Real Metrics from actual connected equipment
+  const realOnlineCount = realConcentradores.filter((c) => c.online === 1).length
+  const realMetrics: DashboardMetrics = {
+    hotspot_online: 0,
+    pppoe_online: 0,
+    concentradores_online: realOnlineCount,
+    total_concentradores: realConcentradores.length,
+    last_update: currentTimeStr,
+  }
 
-  const displayedHotspotChart = isZeroMode ? [] : hotspotChartData
-  const displayedEquipChart = isZeroMode ? [] : equipChartData
-  const displayedConcentradores = isZeroMode ? [] : mockConcentradores
+  const displayedMetrics = isDemoMode ? demoMetrics : realMetrics
+  const displayedHotspotChart = isDemoMode ? demoHotspotData : []
+  const displayedEquipChart = isDemoMode ? demoEquipData : []
+  const displayedConcentradores = isDemoMode ? mockConcentradores : realConcentradores
+
+  // If user is not authenticated, render Login Page
+  if (!currentUser) {
+    return (
+      <LoginPage
+        onLoginSuccess={(user) => setCurrentUser(user)}
+        isDarkMode={isDarkMode}
+        onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
+      />
+    )
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-200">
@@ -161,11 +234,13 @@ export function App() {
         onOpenMobileSidebar={() => setIsMobileOpen(true)}
         isDarkMode={isDarkMode}
         onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
-        isLiveSimulating={isLiveSimulating}
-        onToggleLiveSimulation={() => setIsLiveSimulating(!isLiveSimulating)}
-        notificationCount={2}
-        isZeroMode={isZeroMode}
-        onToggleZeroMode={() => setIsZeroMode(!isZeroMode)}
+        isLiveSimulating={isDemoMode}
+        onToggleLiveSimulation={() => setIsDemoMode(!isDemoMode)}
+        notificationCount={0}
+        isZeroMode={!isDemoMode}
+        onToggleZeroMode={() => setIsDemoMode(!isDemoMode)}
+        currentUser={currentUser}
+        onLogout={handleLogout}
       />
 
       {/* 3. Main Dashboard Workspace Content */}
@@ -202,7 +277,11 @@ export function App() {
               />
 
               {/* Tabela de Concentradores e Equipamentos em tempo real */}
-              <ConcentradoresTable concentradores={displayedConcentradores} />
+              <ConcentradoresTable
+                concentradores={displayedConcentradores}
+                onAddConcentrador={!isDemoMode ? handleAddRealConcentrador : undefined}
+                onDeleteConcentrador={!isDemoMode ? handleDeleteRealConcentrador : undefined}
+              />
             </>
           ) : (
             <SectionViews
