@@ -21,7 +21,7 @@ export const AssinaturaView: React.FC<{ mode?: 'planos' | 'faturas' }> = ({ mode
       <div>
         <h2 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
           <i className="bi bi-credit-card-2-front text-indigo-400" />
-          Assinatura WFV Admin & Faturas
+          Assinatura CMS_Hotspot & Faturas
         </h2>
         <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
           Gerencie o plano da sua plataforma, limites de roteadores contratados e 2ª via de faturas.
@@ -63,7 +63,7 @@ export const AssinaturaView: React.FC<{ mode?: 'planos' | 'faturas' }> = ({ mode
                   Assinatura Ativa
                 </span>
                 <h3 className="text-xl font-bold text-slate-800 dark:text-white mt-2">
-                  WFV Admin — Plano Pro Ilimitado
+                  CMS_Hotspot — Plano Pro Ilimitado
                 </h3>
                 <p className="text-xs text-slate-400">Próxima renovação em 25 de Outubro de 2026</p>
               </div>
@@ -108,7 +108,7 @@ export const AssinaturaView: React.FC<{ mode?: 'planos' | 'faturas' }> = ({ mode
               type="button"
               className="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold transition-all shadow-lg shadow-indigo-600/20"
             >
-              Falar com Suporte WFV
+              Falar com Suporte CMS_Hotspot
             </button>
           </div>
         </div>

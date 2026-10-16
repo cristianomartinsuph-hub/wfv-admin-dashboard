@@ -90,7 +90,7 @@ export const TutoriaisLgpdView: React.FC<{ mode: 'tutoriais' | 'lgpd' }> = ({ mo
       <div>
         <h2 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
           <i className="bi bi-play-btn-fill text-indigo-400" />
-          Tutoriais & Central de Ajuda WFV Admin
+          Tutoriais & Central de Ajuda CMS_Hotspot
         </h2>
         <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
           Guias ilustrados passo a passo para configuração de roteadores, faturamento e impressão.
@@ -101,7 +101,7 @@ export const TutoriaisLgpdView: React.FC<{ mode: 'tutoriais' | 'lgpd' }> = ({ mo
         {[
           {
             title: '1. Configuração do MikroTik via Script Automático',
-            desc: 'Aprenda como colar o script oficial do WFV no Terminal do Winbox para ativar o Hotspot, Walled Garden e captive portal em menos de 2 minutos.',
+            desc: 'Aprenda como colar o script oficial do CMS_Hotspot no Terminal do Winbox para ativar o Hotspot, Walled Garden e captive portal em menos de 2 minutos.',
             icon: 'bi-router',
             badge: 'Essencial',
           },

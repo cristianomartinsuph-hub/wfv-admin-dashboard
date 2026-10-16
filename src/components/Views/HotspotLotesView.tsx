@@ -55,7 +55,7 @@ const DEFAULT_LOTES: LoteItem[] = [
 const DEFAULT_VOUCHERS: VoucherItem[] = [
   {
     id: 'v1',
-    codigo: 'WFV-9842-AX',
+    codigo: 'CMS-9842-AX',
     plano: '2 Horas Padrão',
     valor: 5.0,
     lote_id: 'LOTE-2026-001',
@@ -66,7 +66,7 @@ const DEFAULT_VOUCHERS: VoucherItem[] = [
   },
   {
     id: 'v2',
-    codigo: 'WFV-7712-BT',
+    codigo: 'CMS-7712-BT',
     plano: '12 Horas VIP',
     valor: 15.0,
     lote_id: 'LOTE-2026-002',
@@ -77,7 +77,7 @@ const DEFAULT_VOUCHERS: VoucherItem[] = [
   },
   {
     id: 'v3',
-    codigo: 'WFV-3310-QR',
+    codigo: 'CMS-3310-QR',
     plano: '24 Horas Turbo',
     valor: 25.0,
     lote_id: 'PIX-AUTO-OUTUBRO',
@@ -88,7 +88,7 @@ const DEFAULT_VOUCHERS: VoucherItem[] = [
   },
   {
     id: 'v4',
-    codigo: 'WFV-5509-ZP',
+    codigo: 'CMS-5509-ZP',
     plano: '1 Hora Básico',
     valor: 3.0,
     lote_id: 'LOTE-2026-001',
@@ -97,7 +97,7 @@ const DEFAULT_VOUCHERS: VoucherItem[] = [
   },
   {
     id: 'v5',
-    codigo: 'WFV-8821-KL',
+    codigo: 'CMS-8821-KL',
     plano: '2 Horas Padrão',
     valor: 5.0,
     lote_id: 'LOTE-2026-001',
@@ -147,7 +147,7 @@ export const HotspotLotesView: React.FC<HotspotLotesViewProps> = ({ mode = 'vouc
   const [formPlano, setFormPlano] = useState('2 Horas Padrão')
   const [formValor, setFormValor] = useState('5.00')
   const [formQtd, setFormQtd] = useState('25')
-  const [formPrefixo, setFormPrefixo] = useState('WFV')
+  const [formPrefixo, setFormPrefixo] = useState('CMS')
   const [feedback, setFeedback] = useState<string | null>(null)
 
   const getMikrotikExportScript = () => {
@@ -157,7 +157,7 @@ export const HotspotLotesView: React.FC<HotspotLotesViewProps> = ({ mode = 'vouc
 
     const lines = [
       '# ============================================================== ',
-      '# WFV ADMIN - SCRIPT DE IMPORTAÇÃO DE VOUCHERS PARA MIKROTIK',
+      '# CMS_HOTSPOT - SCRIPT DE IMPORTAÇÃO DE VOUCHERS PARA MIKROTIK',
       `# Total de Vouchers: ${list.length}`,
       '# Cole este código no New Terminal do WinBox',
       '# ============================================================== ',
@@ -627,7 +627,7 @@ export const HotspotLotesView: React.FC<HotspotLotesViewProps> = ({ mode = 'vouc
                     type="text"
                     value={formPrefixo}
                     onChange={(e) => setFormPrefixo(e.target.value.toUpperCase())}
-                    placeholder="WFV"
+                    placeholder="CMS"
                     className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-white outline-none focus:ring-1 focus:ring-indigo-500 font-mono"
                   />
                 </div>
@@ -698,7 +698,7 @@ export const HotspotLotesView: React.FC<HotspotLotesViewProps> = ({ mode = 'vouc
                     className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-3 text-center bg-slate-50 dark:bg-slate-800/40 space-y-1"
                   >
                     <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                      WFV HOTSPOT WI-FI
+                      CMS_HOTSPOT WI-FI
                     </p>
                     <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">{v.plano}</p>
                     <div className="my-1.5 p-1.5 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700">

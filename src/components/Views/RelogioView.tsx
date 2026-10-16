@@ -58,7 +58,7 @@ export const RelogioView: React.FC = () => {
       {/* Clock Display Card */}
       <div className="bg-gradient-to-tr from-slate-900 to-indigo-950 border border-indigo-500/30 rounded-2xl p-8 shadow-xl text-center space-y-2">
         <span className="text-xs uppercase tracking-widest text-indigo-400 font-bold">
-          Horário Oficial do Servidor WFV
+          Horário Oficial do Servidor CMS_Hotspot
         </span>
         <div className="text-5xl sm:text-6xl font-black font-mono tracking-widest text-white py-2 selection:bg-indigo-500/30">
           {timeString}

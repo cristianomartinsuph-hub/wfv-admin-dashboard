@@ -92,8 +92,8 @@ export function App() {
           email: session.user.email || 'admin@wfvadmin.com',
           name:
             session.user.user_metadata?.name ||
-            (session.user.email?.includes('cristiano') ? 'Cristiano Martins' : 'Administrador WFV'),
-          empresa: session.user.user_metadata?.empresa || 'WFV Telecom & Hotspot',
+            (session.user.email?.includes('cristiano') ? 'Cristiano Martins' : 'Administrador CMS_Hotspot'),
+          empresa: session.user.user_metadata?.empresa || 'CMS_Hotspot Telecom',
           telefone: session.user.user_metadata?.telefone || '+55 (92) 98450-5812',
         }
         setCurrentUser(user)
@@ -109,8 +109,8 @@ export function App() {
           email: session.user.email || 'admin@wfvadmin.com',
           name:
             session.user.user_metadata?.name ||
-            (session.user.email?.includes('cristiano') ? 'Cristiano Martins' : 'Administrador WFV'),
-          empresa: session.user.user_metadata?.empresa || 'WFV Telecom & Hotspot',
+            (session.user.email?.includes('cristiano') ? 'Cristiano Martins' : 'Administrador CMS_Hotspot'),
+          empresa: session.user.user_metadata?.empresa || 'CMS_Hotspot Telecom',
           telefone: session.user.user_metadata?.telefone || '+55 (92) 98450-5812',
         }
         setCurrentUser(user)

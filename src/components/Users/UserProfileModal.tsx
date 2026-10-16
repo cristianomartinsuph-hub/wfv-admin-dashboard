@@ -24,8 +24,8 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
   onUpdateUser,
 }) => {
   const [isEditing, setIsEditing] = useState(false)
-  const [nome, setNome] = useState(user?.name || 'Administrador WFV')
-  const [empresa, setEmpresa] = useState(user?.empresa || 'WFV Telecom & Hotspot')
+  const [nome, setNome] = useState(user?.name || 'Administrador CMS_Hotspot')
+  const [empresa, setEmpresa] = useState(user?.empresa || 'CMS_Hotspot Telecom')
   const [telefone, setTelefone] = useState(user?.telefone || '(11) 98765-4321')
   const [selectedCountry, setSelectedCountry] = useState(COUNTRIES[0])
   const [showCountryDropdown, setShowCountryDropdown] = useState(false)
@@ -35,8 +35,8 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
 
   useEffect(() => {
     if (user) {
-      setNome(user.name || 'Administrador WFV')
-      setEmpresa(user.empresa || 'WFV Telecom & Hotspot')
+      setNome(user.name || 'Administrador CMS_Hotspot')
+      setEmpresa(user.empresa || 'CMS_Hotspot Telecom')
       setTelefone(user.telefone || '(11) 98765-4321')
       if (user.logo) setLogoPreview(user.logo)
     }

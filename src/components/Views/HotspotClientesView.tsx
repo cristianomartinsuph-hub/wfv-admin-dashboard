@@ -73,7 +73,7 @@ export const HotspotClientesView: React.FC = () => {
   const getMikrotikBindingScript = () => {
     const lines = [
       '# ============================================================== ',
-      '# WFV ADMIN - IP-BINDING (BYPASS CAPTIVE PORTAL PARA CLIENTES FIXOS)',
+      '# CMS_HOTSPOT - IP-BINDING (BYPASS CAPTIVE PORTAL PARA CLIENTES FIXOS)',
       `# Total de Dispositivos: ${clientes.length}`,
       '# Cole este código no New Terminal do WinBox',
       '# ============================================================== ',

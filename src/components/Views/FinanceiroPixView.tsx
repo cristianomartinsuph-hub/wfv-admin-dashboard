@@ -21,7 +21,7 @@ const DEFAULT_TRANSACTIONS: PixTransaction[] = [
     valor: 15.0,
     status: 'aprovado',
     data_hora: '2026-10-15 14:30:12',
-    voucher_codigo: 'WFV-7712-BT',
+    voucher_codigo: 'CMS-7712-BT',
   },
   {
     id: 'tx-102',
@@ -31,7 +31,7 @@ const DEFAULT_TRANSACTIONS: PixTransaction[] = [
     valor: 5.0,
     status: 'aprovado',
     data_hora: '2026-10-15 13:22:05',
-    voucher_codigo: 'WFV-9842-AX',
+    voucher_codigo: 'CMS-9842-AX',
   },
   {
     id: 'tx-103',
@@ -41,7 +41,7 @@ const DEFAULT_TRANSACTIONS: PixTransaction[] = [
     valor: 25.0,
     status: 'aprovado',
     data_hora: '2026-10-15 11:10:44',
-    voucher_codigo: 'WFV-3310-QR',
+    voucher_codigo: 'CMS-3310-QR',
   },
   {
     id: 'tx-104',
@@ -51,7 +51,7 @@ const DEFAULT_TRANSACTIONS: PixTransaction[] = [
     valor: 15.0,
     status: 'devolvido',
     data_hora: '2026-10-14 16:45:00',
-    voucher_codigo: 'WFV-1102-LK',
+    voucher_codigo: 'CMS-1102-LK',
     motivo_devolucao: 'Pagamento duplicado pelo cliente',
   },
   {
@@ -62,7 +62,7 @@ const DEFAULT_TRANSACTIONS: PixTransaction[] = [
     valor: 60.0,
     status: 'contestacao',
     data_hora: '2026-10-14 10:12:18',
-    voucher_codigo: 'WFV-7788-SEM',
+    voucher_codigo: 'CMS-7788-SEM',
     motivo_devolucao: 'Contestação MED em análise pelo banco',
   },
 ]

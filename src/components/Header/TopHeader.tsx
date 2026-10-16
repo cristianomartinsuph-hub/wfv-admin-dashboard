@@ -55,7 +55,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
         />
 
         <div className="hidden sm:flex items-center gap-2">
-          <span className="text-slate-800 dark:text-white font-bold text-sm tracking-tight">WFV Admin</span>
+          <span className="text-slate-800 dark:text-white font-bold text-sm tracking-tight">CMS_Hotspot</span>
           <span className="text-slate-400 dark:text-slate-600">/</span>
           <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Painel de Controle</span>
         </div>
@@ -220,7 +220,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
             <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl z-50 overflow-hidden animate-in fade-in duration-200">
               <div className="px-4 py-2.5 bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700">
                 <p className="text-xs font-semibold text-slate-800 dark:text-white truncate">
-                  {currentUser?.name || 'Administrador WFV'}
+                  {currentUser?.name || 'Administrador CMS_Hotspot'}
                 </p>
                 <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
                   {currentUser?.email || 'admin@wfvadmin.com'}

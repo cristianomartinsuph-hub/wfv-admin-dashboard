@@ -20,7 +20,7 @@ export const ConsumoView: React.FC = () => {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `relatorio-consumo-wfv-${periodo}.csv`
+    a.download = `relatorio-consumo-cmshotspot-${periodo}.csv`
     a.click()
   }
 

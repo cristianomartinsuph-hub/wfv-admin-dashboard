@@ -29,7 +29,7 @@ const DEFAULT_ALERTAS: AlertaItem[] = [
   {
     id: '3',
     titulo: 'Aviso de Renovação de Licença',
-    mensagem: 'A fatura de Outubro do WFV Admin vence em 25/10/2026.',
+    mensagem: 'A fatura de Outubro do CMS_Hotspot vence em 25/10/2026.',
     tipo: 'aviso',
     data_hora: 'Ontem às 14:00',
     lido: true,

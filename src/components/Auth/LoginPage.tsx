@@ -79,7 +79,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               data.user.user_metadata?.name ||
               (data.user.email?.includes('cristiano')
                 ? 'Cristiano Martins'
-                : 'Administrador WFV'),
+                : 'Administrador CMS_Hotspot'),
           }
           if (rememberMe) {
             localStorage.setItem('wfv_admin_session', JSON.stringify(user))
@@ -99,7 +99,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             ? 'Cristiano Martins'
             : cleanEmail.includes('cms')
             ? 'CMS Informática'
-            : 'Administrador WFV',
+            : 'Administrador CMS_Hotspot',
         }
         if (rememberMe) {
           localStorage.setItem('wfv_admin_session', JSON.stringify(user))
@@ -112,7 +112,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
       if (customUser && (isValidPass || cleanPassword.length >= 3)) {
         const user = {
           email: customUser.email,
-          name: customUser.name || 'Usuário WFV',
+          name: customUser.name || 'Usuário CMS_Hotspot',
         }
         if (rememberMe) {
           localStorage.setItem('wfv_admin_session', JSON.stringify(user))
@@ -135,7 +135,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
       }
 
       setErrorMessage(
-        'E-mail ou senha incorretos. Utilize admin@wfvadmin.com e senha admin123 ou clique no botão de preenchimento rápido.'
+        'E-mail ou senha incorretos. Verifique suas credenciais de acesso.'
       )
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Erro ao processar login'
@@ -176,7 +176,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               <div className="w-10 h-10 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center p-1.5 shadow-lg shadow-indigo-500/10">
                 <img
                   src="/wifivoucher.png"
-                  alt="WFV Admin"
+                  alt="CMS_Hotspot"
                   className="w-full h-full object-contain"
                   onError={(e) => {
                     e.currentTarget.style.display = 'none'
@@ -185,7 +185,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                 <i className="bi bi-wifi text-indigo-400 text-lg hidden only:block" />
               </div>
               <span className="text-slate-900 dark:text-white font-bold tracking-tight text-lg">
-                WFV Admin
+                CMS_Hotspot
               </span>
             </div>
 
@@ -223,7 +223,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           </div>
 
           <div className="text-[10px] text-slate-400 dark:text-slate-500 relative z-10">
-            &copy; 2026 WFV Admin. Todos os direitos reservados.
+            &copy; 2026 CMS_Hotspot. Todos os direitos reservados.
           </div>
         </div>
 
@@ -233,7 +233,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-2 md:hidden">
               <img src="/wifivoucher.png" alt="Logo" className="w-7 h-7 rounded-lg" />
-              <span className="font-bold text-sm text-slate-900 dark:text-white">WFV Admin</span>
+              <span className="font-bold text-sm text-slate-900 dark:text-white">CMS_Hotspot</span>
             </div>
             <div className="ml-auto flex items-center gap-2">
               <button
@@ -266,30 +266,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               <span>{errorMessage}</span>
             </div>
           )}
-
-          {/* Quick Fill Credentials Banner */}
-          <div className="mb-4 p-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/60 flex items-center justify-between gap-3 text-xs">
-            <div className="min-w-0">
-              <p className="font-semibold text-indigo-900 dark:text-indigo-200 flex items-center gap-1.5">
-                <i className="bi bi-shield-lock-fill text-indigo-500" />
-                Acesso do Administrador
-              </p>
-              <p className="text-[11px] text-indigo-700/80 dark:text-indigo-400 font-mono mt-0.5 truncate">
-                admin@wfvadmin.com &bull; Senha: admin123
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                setEmail('admin@wfvadmin.com')
-                setPassword('admin123')
-                setErrorMessage(null)
-              }}
-              className="px-2.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold text-[11px] transition-colors cursor-pointer whitespace-nowrap shadow-xs active:scale-95 flex-shrink-0"
-            >
-              Preencher
-            </button>
-          </div>
 
           <form onSubmit={handleLogin} className="space-y-4">
             {/* Email Field */}

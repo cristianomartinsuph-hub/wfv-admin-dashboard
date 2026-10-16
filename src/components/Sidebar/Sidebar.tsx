@@ -55,7 +55,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               />
               <i className="bi bi-wifi text-indigo-400 text-base hidden only:block" />
             </div>
-            <span className="font-semibold text-white text-base tracking-tight block">WFV Admin</span>
+            <span className="font-semibold text-white text-base tracking-tight block">CMS_Hotspot</span>
           </div>
 
           <div className="flex items-center gap-1">
@@ -257,7 +257,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-xs font-semibold text-slate-200 group-hover:text-indigo-300 truncate transition-colors">
-                {currentUser?.name || 'Administrador WFV'}
+                {currentUser?.name || 'Administrador CMS_Hotspot'}
               </p>
               <p className="text-[10px] text-slate-400 truncate">
                 {currentUser?.email || 'admin@wfvadmin.com'}

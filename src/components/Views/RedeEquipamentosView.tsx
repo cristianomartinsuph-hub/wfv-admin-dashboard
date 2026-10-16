@@ -13,7 +13,7 @@ export const RedeEquipamentosView: React.FC<RedeEquipamentosViewProps> = ({
   const [testingId, setTestingId] = useState<string | null>(null)
 
   // Interactive Configuration Generator State
-  const [identidade, setIdentidade] = useState('WFV-MikroTik-Central')
+  const [identidade, setIdentidade] = useState('CMS-MikroTik-Central')
   const [interfaceNome, setInterfaceNome] = useState('ether2')
   const [ipGateway, setIpGateway] = useState('192.168.88.1/24')
   const [poolRange, setPoolRange] = useState('192.168.88.10-192.168.88.250')
@@ -25,7 +25,7 @@ export const RedeEquipamentosView: React.FC<RedeEquipamentosViewProps> = ({
   const redeSubnet = ipSemMascara.substring(0, ipSemMascara.lastIndexOf('.')) + '.0/24'
 
   const generatedScript = `# ==============================================================
-# WFV ADMIN - SCRIPT DE PROVISIONAMENTO COMPLETO ROUTEROS
+# CMS_HOTSPOT - SCRIPT DE PROVISIONAMENTO COMPLETO ROUTEROS
 # Gerado para o concentrador: ${identidade}
 # Suporta: RouterOS v6.x e v7.x (RB750, hEX, hAP, RB3011, RB4011, CCR)
 # ==============================================================
@@ -34,16 +34,16 @@ export const RedeEquipamentosView: React.FC<RedeEquipamentosViewProps> = ({
 /system identity set name="${identidade}"
 
 # 2. Configurar Endereço IP na Interface de Hotspot
-/ip address add address=${ipGateway} interface=${interfaceNome} comment="WFV Hotspot Gateway"
+/ip address add address=${ipGateway} interface=${interfaceNome} comment="CMS_Hotspot Gateway"
 
 # 3. Configurar Pool de IPs e DHCP Server
 /ip pool add name=hs-pool ranges=${poolRange}
 /ip dhcp-server add name=dhcp-hotspot address-pool=hs-pool interface=${interfaceNome} disabled=no lease-time=1h
-/ip dhcp-server network add address=${redeSubnet} gateway=${ipSemMascara} dns-server=8.8.8.8,1.1.1.1 comment="WFV DHCP Network"
+/ip dhcp-server network add address=${redeSubnet} gateway=${ipSemMascara} dns-server=8.8.8.8,1.1.1.1 comment="CMS_Hotspot DHCP Network"
 
 # 4. Criar Perfil de Hotspot
 /ip hotspot profile
-add name="hsp-wfv" \\
+add name="hsp-cms" \\
     dns-name="${dnsName}" \\
     hotspot-address=${ipSemMascara} \\
     html-directory=hotspot \\
@@ -52,15 +52,15 @@ add name="hsp-wfv" \\
 
 # 5. Criar Servidor de Hotspot
 /ip hotspot
-add name="hotspot-wfv" \\
+add name="hotspot-cms" \\
     interface=${interfaceNome} \\
-    profile="hsp-wfv" \\
+    profile="hsp-cms" \\
     addresses-per-mac=1 \\
     disabled=no
 
 # 6. Walled Garden (Liberação do Portal Nuvem, Vercel e Gateways de Pagamento PIX)
 /ip hotspot walled-garden
-add comment="WFV Admin Nuvem" dst-host="${dominioNuvem}"
+add comment="CMS_Hotspot Nuvem" dst-host="${dominioNuvem}"
 add comment="Vercel CDN" dst-host="*.vercel.app"
 add comment="Vercel Storage" dst-host="*.vercel-storage.com"
 add comment="Mercado Pago PIX" dst-host="*.mercadopago.com"
@@ -69,19 +69,19 @@ add comment="Banco Central PIX" dst-host="*.bcb.gov.br"
 add comment="Efi / Gerencianet PIX" dst-host="*.efipay.com.br"
 add comment="Asaas PIX Gateway" dst-host="*.asaas.com"
 
-# 7. Criar Perfis de Velocidade (Planos Tarifários WFV)
+# 7. Criar Perfis de Velocidade (Planos Tarifários CMS_Hotspot)
 /ip hotspot user profile
 add name="Plano-2H" rate-limit="5M/2M" shared-users=1 session-timeout=2h status-autorefresh=1m
 add name="Plano-12H" rate-limit="10M/5M" shared-users=1 session-timeout=12h status-autorefresh=1m
 add name="Plano-24H" rate-limit="15M/10M" shared-users=1 session-timeout=24h status-autorefresh=1m
 add name="VIP-Ilimitado" rate-limit="30M/15M" shared-users=2 status-autorefresh=1m
 
-# 8. Baixar Arquivos Oficiais do Captive Portal WFV
+# 8. Baixar Arquivos Oficiais do Captive Portal CMS_Hotspot
 /tool fetch url="https://${dominioNuvem}/hotspot/login.html" mode=https dst-path="hotspot/login.html"
 /tool fetch url="https://${dominioNuvem}/hotspot/status.html" mode=https dst-path="hotspot/status.html"
 
 # Finalizado com sucesso!
-:log info "WFV Admin Hotspot provisionado com sucesso em ${identidade}!"`
+:log info "CMS_Hotspot provisionado com sucesso em ${identidade}!"`
 
   const handleCopy = () => {
     navigator.clipboard.writeText(generatedScript)
@@ -94,7 +94,7 @@ add name="VIP-Ilimitado" rate-limit="30M/15M" shared-users=2 status-autorefresh=
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `wfv_setup_${identidade.toLowerCase().replace(/[^a-z0-9]/g, '_')}.rsc`
+    a.download = `cms_setup_${identidade.toLowerCase().replace(/[^a-z0-9]/g, '_')}.rsc`
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
@@ -208,7 +208,7 @@ add name="VIP-Ilimitado" rate-limit="30M/15M" shared-users=2 status-autorefresh=
                 <span className="w-5 h-5 rounded-full bg-sky-500/20 text-sky-400 font-bold inline-flex items-center justify-center mr-1.5 text-[11px]">4</span>
                 <strong>Conectar Clientes</strong>
                 <p className="text-[11px] text-slate-400 mt-1">
-                  Conecte o smartphone ou PC no Wi-Fi. A tela de login WFV abrirá na hora!
+                  Conecte o smartphone ou PC no Wi-Fi. A tela de login CMS_Hotspot abrirá na hora!
                 </p>
               </div>
             </div>
@@ -285,7 +285,7 @@ add name="VIP-Ilimitado" rate-limit="30M/15M" shared-users=2 status-autorefresh=
 
               <div>
                 <label className="block text-slate-600 dark:text-slate-300 font-semibold mb-1">
-                  Domínio da Aplicação WFV Nuvem
+                  Domínio da Aplicação CMS_Hotspot Nuvem
                 </label>
                 <input
                   type="text"
