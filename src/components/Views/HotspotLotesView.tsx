@@ -138,6 +138,9 @@ export const HotspotLotesView: React.FC<HotspotLotesViewProps> = ({ mode = 'vouc
   const [statusFilter, setStatusFilter] = useState('todos')
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showPrintModal, setShowPrintModal] = useState(false)
+  const [showExportModal, setShowExportModal] = useState(false)
+  const [exportLoteFilter, setExportLoteFilter] = useState('todos')
+  const [copiedExport, setCopiedExport] = useState(false)
   const [selectedLote, setSelectedLote] = useState<LoteItem | null>(null)
 
   // Form states
@@ -146,6 +149,53 @@ export const HotspotLotesView: React.FC<HotspotLotesViewProps> = ({ mode = 'vouc
   const [formQtd, setFormQtd] = useState('25')
   const [formPrefixo, setFormPrefixo] = useState('WFV')
   const [feedback, setFeedback] = useState<string | null>(null)
+
+  const getMikrotikExportScript = () => {
+    const list = exportLoteFilter === 'todos'
+      ? vouchers
+      : vouchers.filter((v) => v.lote_id === exportLoteFilter)
+
+    const lines = [
+      '# ============================================================== ',
+      '# WFV ADMIN - SCRIPT DE IMPORTAÇÃO DE VOUCHERS PARA MIKROTIK',
+      `# Total de Vouchers: ${list.length}`,
+      '# Cole este código no New Terminal do WinBox',
+      '# ============================================================== ',
+      '/ip hotspot user',
+    ]
+
+    list.forEach((v) => {
+      let profile = 'Plano-2H'
+      let limitUptime = '2h'
+      if (v.plano.includes('1 Hora')) { profile = 'Plano-1H'; limitUptime = '1h' }
+      else if (v.plano.includes('12 Horas')) { profile = 'Plano-12H'; limitUptime = '12h' }
+      else if (v.plano.includes('24 Horas')) { profile = 'Plano-24H'; limitUptime = '24h' }
+      else if (v.plano.includes('7 Dias')) { profile = 'Plano-7D'; limitUptime = '7d' }
+
+      lines.push(`add name="${v.codigo}" password="${v.codigo}" profile="${profile}" limit-uptime=${limitUptime} comment="Lote ${v.lote_id}"`)
+    })
+
+    return lines.join('\n')
+  }
+
+  const handleCopyMikrotikScript = () => {
+    navigator.clipboard.writeText(getMikrotikExportScript())
+    setCopiedExport(true)
+    setTimeout(() => setCopiedExport(false), 2500)
+  }
+
+  const handleDownloadVouchersRsc = () => {
+    const script = getMikrotikExportScript()
+    const blob = new Blob([script], { type: 'text/plain;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `vouchers_mikrotik_${exportLoteFilter.toLowerCase()}.rsc`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
 
   const persistLotes = (data: LoteItem[]) => {
     setLotes(data)
@@ -259,7 +309,16 @@ export const HotspotLotesView: React.FC<HotspotLotesViewProps> = ({ mode = 'vouc
           </p>
         </div>
 
-        <div className="flex items-center gap-2 self-start sm:self-auto">
+        <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+          <button
+            type="button"
+            onClick={() => setShowExportModal(true)}
+            className="px-3.5 py-2 bg-sky-600/15 hover:bg-sky-600/25 text-sky-400 border border-sky-500/30 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+          >
+            <i className="bi bi-broadcast-pin text-sm" />
+            <span>Exportar para MikroTik (.rsc)</span>
+          </button>
+
           <button
             type="button"
             onClick={() => setShowCreateModal(true)}
@@ -676,6 +735,90 @@ export const HotspotLotesView: React.FC<HotspotLotesViewProps> = ({ mode = 'vouc
                   <span>Imprimir Agora</span>
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Exportação para MikroTik RouterOS */}
+      {showExportModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-2xl p-6 shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-sky-500/15 text-sky-400">
+                  <i className="bi bi-broadcast-pin text-lg" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-slate-800 dark:text-white">
+                    Exportar Vouchers para MikroTik RouterOS
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Gera os comandos prontos para cadastrar os clientes no Hotspot User do MikroTik
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowExportModal(false)}
+                className="text-slate-400 hover:text-slate-200 cursor-pointer p-1"
+              >
+                <i className="bi bi-x-lg text-base" />
+              </button>
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-2">
+                <span className="text-slate-400 font-medium">Filtrar Lote:</span>
+                <select
+                  value={exportLoteFilter}
+                  onChange={(e) => setExportLoteFilter(e.target.value)}
+                  className="bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 dark:text-white outline-none"
+                >
+                  <option value="todos">Todos os Vouchers ({vouchers.length})</option>
+                  {lotes.map((l) => (
+                    <option key={l.id} value={l.codigo_lote}>
+                      {l.codigo_lote} - {l.plano} ({l.quantidade} vouchers)
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleDownloadVouchersRsc}
+                  className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-sky-400 border border-sky-500/30 rounded-lg font-semibold flex items-center gap-1.5 cursor-pointer"
+                >
+                  <i className="bi bi-download" />
+                  <span>Baixar .rsc</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCopyMikrotikScript}
+                  className="px-3.5 py-1.5 bg-sky-600 hover:bg-sky-700 text-white rounded-lg font-semibold shadow-xs flex items-center gap-1.5 cursor-pointer"
+                >
+                  <i className={`bi ${copiedExport ? 'bi-check-lg' : 'bi-clipboard'}`} />
+                  <span>{copiedExport ? 'Copiado!' : 'Copiar Comandos'}</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-hidden flex flex-col">
+              <pre className="flex-1 p-3.5 bg-slate-950 text-emerald-400 rounded-xl text-xs font-mono overflow-auto border border-slate-800 leading-relaxed max-h-72 select-all">
+                {getMikrotikExportScript()}
+              </pre>
+            </div>
+
+            <div className="p-3 bg-sky-950/20 border border-sky-500/20 rounded-xl text-xs text-slate-300 space-y-1">
+              <strong className="text-sky-400 flex items-center gap-1">
+                <i className="bi bi-info-circle" /> Como aplicar no seu MikroTik:
+              </strong>
+              <p className="text-[11px] text-slate-400">
+                1. No WinBox, abra o menu <strong>New Terminal</strong>.<br />
+                2. Clique com botão direito e selecione <strong>Paste</strong> (ou pressione Shift+Insert).<br />
+                3. Os vouchers serão criados em <code>/ip hotspot user</code> e os clientes já podem navegar!
+              </p>
             </div>
           </div>
         </div>

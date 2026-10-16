@@ -60,6 +60,8 @@ export const HotspotClientesView: React.FC = () => {
 
   const [searchTerm, setSearchTerm] = useState('')
   const [showModal, setShowModal] = useState(false)
+  const [showExportModal, setShowExportModal] = useState(false)
+  const [copiedExport, setCopiedExport] = useState(false)
   const [formNome, setFormNome] = useState('')
   const [formMac, setFormMac] = useState('')
   const [formIp, setFormIp] = useState('')
@@ -67,6 +69,45 @@ export const HotspotClientesView: React.FC = () => {
   const [formConcentrador, setFormConcentrador] = useState('Central-Mikrotik-01')
   const [formObs, setFormObs] = useState('')
   const [feedback, setFeedback] = useState<string | null>(null)
+
+  const getMikrotikBindingScript = () => {
+    const lines = [
+      '# ============================================================== ',
+      '# WFV ADMIN - IP-BINDING (BYPASS CAPTIVE PORTAL PARA CLIENTES FIXOS)',
+      `# Total de Dispositivos: ${clientes.length}`,
+      '# Cole este código no New Terminal do WinBox',
+      '# ============================================================== ',
+      '/ip hotspot ip-binding',
+    ]
+
+    clientes.forEach((c) => {
+      const type = c.status === 'ativo' ? 'bypassed' : 'blocked'
+      const macParam = c.mac ? `mac-address=${c.mac}` : ''
+      const ipParam = c.ip ? `address=${c.ip}` : ''
+      lines.push(`add ${macParam} ${ipParam} type=${type} comment="${c.nome} - ${c.plano}"`)
+    })
+
+    return lines.join('\n')
+  }
+
+  const handleCopyBindingScript = () => {
+    navigator.clipboard.writeText(getMikrotikBindingScript())
+    setCopiedExport(true)
+    setTimeout(() => setCopiedExport(false), 2500)
+  }
+
+  const handleDownloadBindingRsc = () => {
+    const script = getMikrotikBindingScript()
+    const blob = new Blob([script], { type: 'text/plain;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `clientes_fixos_mikrotik.rsc`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
 
   const persist = (data: ClienteFixo[]) => {
     setClientes(data)
@@ -141,14 +182,25 @@ export const HotspotClientesView: React.FC = () => {
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setShowModal(true)}
-          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-lg shadow-indigo-600/20 transition-all flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
-        >
-          <i className="bi bi-plus-lg text-sm" />
-          <span>+ Adicionar Cliente Fixo</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+          <button
+            type="button"
+            onClick={() => setShowExportModal(true)}
+            className="px-3.5 py-2 bg-sky-600/15 hover:bg-sky-600/25 text-sky-400 border border-sky-500/30 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+          >
+            <i className="bi bi-broadcast-pin text-sm" />
+            <span>Exportar Bypasses para MikroTik</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setShowModal(true)}
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-lg shadow-indigo-600/20 transition-all flex items-center gap-1.5 cursor-pointer"
+          >
+            <i className="bi bi-plus-lg text-sm" />
+            <span>+ Adicionar Cliente Fixo</span>
+          </button>
+        </div>
       </div>
 
       {feedback && (
@@ -377,6 +429,77 @@ export const HotspotClientesView: React.FC = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Exportação IP-Binding MikroTik */}
+      {showExportModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-2xl p-6 shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-sky-500/15 text-sky-400">
+                  <i className="bi bi-broadcast-pin text-lg" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-slate-800 dark:text-white">
+                    Exportar IP-Binding para MikroTik (Bypass Captive Portal)
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Libera dispositivos VIP, caixas POS e smart TVs diretamente pelo endereço MAC sem tela de login
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowExportModal(false)}
+                className="text-slate-400 hover:text-slate-200 cursor-pointer p-1"
+              >
+                <i className="bi bi-x-lg text-base" />
+              </button>
+            </div>
+
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-slate-400">
+                Total de dispositivos cadastrados: <strong>{clientes.length}</strong>
+              </span>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleDownloadBindingRsc}
+                  className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-sky-400 border border-sky-500/30 rounded-lg font-semibold flex items-center gap-1.5 cursor-pointer"
+                >
+                  <i className="bi bi-download" />
+                  <span>Baixar .rsc</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCopyBindingScript}
+                  className="px-3.5 py-1.5 bg-sky-600 hover:bg-sky-700 text-white rounded-lg font-semibold shadow-xs flex items-center gap-1.5 cursor-pointer"
+                >
+                  <i className={`bi ${copiedExport ? 'bi-check-lg' : 'bi-clipboard'}`} />
+                  <span>{copiedExport ? 'Copiado!' : 'Copiar Comandos'}</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-hidden flex flex-col">
+              <pre className="flex-1 p-3.5 bg-slate-950 text-emerald-400 rounded-xl text-xs font-mono overflow-auto border border-slate-800 leading-relaxed max-h-72 select-all">
+                {getMikrotikBindingScript()}
+              </pre>
+            </div>
+
+            <div className="p-3 bg-sky-950/20 border border-sky-500/20 rounded-xl text-xs text-slate-300 space-y-1">
+              <strong className="text-sky-400 flex items-center gap-1">
+                <i className="bi bi-info-circle" /> Como funciona o Bypass no MikroTik:
+              </strong>
+              <p className="text-[11px] text-slate-400">
+                1. No WinBox, abra o menu <strong>New Terminal</strong> e cole os comandos acima.<br />
+                2. Os dispositivos configurados com <code>type=bypassed</code> terão acesso imediato à internet assim que conectarem no cabo ou Wi-Fi.
+              </p>
+            </div>
           </div>
         </div>
       )}

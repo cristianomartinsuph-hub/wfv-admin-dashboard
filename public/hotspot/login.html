@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Portal Wi-Fi - WFV Admin</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    body {
+      background: #090d16;
+      color: #f1f5f9;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 380px;
+      padding: 28px 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      text-align: center;
+    }
+    .logo-box {
+      width: 64px;
+      height: 64px;
+      background: #1e1b4b;
+      border: 1px solid #3730a3;
+      border-radius: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    .logo-box svg {
+      width: 32px;
+      height: 32px;
+      fill: #818cf8;
+    }
+    h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+    p.subtitle {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-bottom: 22px;
+    }
+    .form-group {
+      text-align: left;
+      margin-bottom: 16px;
+    }
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #cbd5e1;
+      margin-bottom: 6px;
+    }
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      background: #090d16;
+      border: 1px solid #334155;
+      color: #ffffff;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 15px;
+      outline: none;
+      letter-spacing: 1px;
+      text-align: center;
+      font-weight: 700;
+      text-transform: uppercase;
+      transition: border-color 0.2s;
+    }
+    input[type="text"]:focus, input[type="password"]:focus {
+      border-color: #6366f1;
+    }
+    .btn-primary {
+      width: 100%;
+      background: #4f46e5;
+      color: #ffffff;
+      border: none;
+      padding: 13px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn-primary:active {
+      transform: scale(0.98);
+      background: #4338ca;
+    }
+    .divider {
+      display: flex;
+      align-items: center;
+      margin: 20px 0;
+      color: #64748b;
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .divider::before, .divider::after {
+      content: "";
+      flex: 1;
+      border-bottom: 1px solid #1e293b;
+    }
+    .divider span {
+      padding: 0 10px;
+    }
+    .btn-pix {
+      width: 100%;
+      background: #064e3b;
+      color: #34d399;
+      border: 1px solid #059669;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      text-decoration: none;
+    }
+    .btn-trial {
+      width: 100%;
+      background: #1e293b;
+      color: #cbd5e1;
+      border: 1px solid #334155;
+      padding: 11px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+    .meta-info {
+      margin-top: 20px;
+      padding-top: 14px;
+      border-top: 1px solid #1e293b;
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: #64748b;
+      font-family: monospace;
+    }
+    .error-msg {
+      background: #450a0a;
+      border: 1px solid #991b1b;
+      color: #f87171;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 12px;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo-box">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 3C7.5 3 3.6 4.8 0.7 7.7L2.8 9.8C5.1 7.5 8.4 6 12 6C15.6 6 18.9 7.5 21.2 9.8L23.3 7.7C20.4 4.8 16.5 3 12 3ZM12 8C8.9 8 6.1 9.3 4.2 11.2L6.3 13.3C7.7 11.9 9.8 11 12 11C14.2 11 16.3 11.9 17.7 13.3L19.8 11.2C17.9 9.3 15.1 8 12 8ZM12 13C10.3 13 8.8 13.7 7.8 14.8L12 19L16.2 14.8C15.2 13.7 13.7 13 12 13Z"/>
+      </svg>
+    </div>
+
+    <h1>Acesso Wi-Fi de Alta Velocidade</h1>
+    <p class="subtitle">Insira o código do seu voucher ou compre agora via PIX</p>
+
+    <!-- Exibição de erro do MikroTik se houver -->
+    <!-- $(if error) -->
+    <div class="error-msg" id="errorBlock" style="display: none;">
+      <!-- $(error) -->Código inválido ou tempo expirado.
+    </div>
+    <!-- $(endif) -->
+
+    <!-- Formulário padrão MikroTik -->
+    <form name="login" action="$(link-login-only)" method="post">
+      <input type="hidden" name="dst" value="$(link-orig)" />
+      <input type="hidden" name="popup" value="true" />
+
+      <div class="form-group">
+        <label for="username">Código do Voucher</label>
+        <input 
+          type="text" 
+          id="username" 
+          name="username" 
+          value="$(username)" 
+          placeholder="EX: WFV-7842" 
+          required 
+          autocomplete="off" 
+          autocapitalize="characters"
+        />
+        <input type="hidden" name="password" id="password" value="" />
+      </div>
+
+      <button type="submit" class="btn-primary" onclick="document.getElementById('password').value = document.getElementById('username').value;">
+        Conectar à Internet
+      </button>
+    </form>
+
+    <div class="divider">
+      <span>Ou Opções de Acesso</span>
+    </div>
+
+    <!-- Botão de Compra PIX -->
+    <a href="https://reateste.vercel.app/" target="_blank" class="btn-pix">
+      <span>⚡ Comprar Voucher via PIX (Ativação Instantânea)</span>
+    </a>
+
+    <!-- Botão de Acesso Grátis / Trial MikroTik -->
+    <!-- $(if trial == 'yes') -->
+    <a href="$(link-login-only)?dst=$(link-orig-esc)&username=T-$(mac-esc)" class="btn-trial">
+      <span>⏱️ Teste Grátis (Trial 15 min)</span>
+    </a>
+    <!-- $(endif) -->
+
+    <div class="meta-info">
+      <span>IP: $(ip)</span>
+      <span>MAC: $(mac)</span>
+    </div>
+  </div>
+
+  <script>
+    // Se o usuário digitar o voucher, copia automaticamente para o campo de senha (padrão 1-user MikroTik)
+    const userInput = document.getElementById('username');
+    const passInput = document.getElementById('password');
+    if (userInput && passInput) {
+      userInput.addEventListener('input', () => {
+        passInput.value = userInput.value;
+      });
+    }
+  </script>
+</body>
+</html>
