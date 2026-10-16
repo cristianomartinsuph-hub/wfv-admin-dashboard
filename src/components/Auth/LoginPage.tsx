@@ -12,8 +12,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   isDarkMode,
   onToggleDarkMode,
 }) => {
-  const [email, setEmail] = useState('admin@wfvadmin.com')
-  const [password, setPassword] = useState('Admin@WFV2026!')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(true)
   const [loading, setLoading] = useState(false)
@@ -284,20 +284,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               </label>
             </div>
 
-            {/* Quick Administrator Credentials Helper Badge */}
-            <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-[11px] text-slate-600 dark:text-slate-300 space-y-1">
-              <div className="font-semibold text-indigo-400 flex items-center gap-1.5">
-                <i className="bi bi-shield-lock-fill" /> Acesso Administrador Criado:
-              </div>
-              <div className="flex flex-wrap gap-x-4 text-[10px] text-slate-400">
-                <span>
-                  E-mail: <strong className="text-slate-200">admin@wfvadmin.com</strong>
-                </span>
-                <span>
-                  Senha: <strong className="text-slate-200 font-mono">Admin@WFV2026!</strong>
-                </span>
-              </div>
-            </div>
 
             {/* Submit Button */}
             <button

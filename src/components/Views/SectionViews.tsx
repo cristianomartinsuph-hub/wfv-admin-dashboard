@@ -1,5 +1,6 @@
 import React from 'react'
 import type { ActiveRoute } from '../../types/dashboard'
+import { UserManagementView } from '../Users/UserManagementView'
 
 interface SectionViewsProps {
   activeRoute: ActiveRoute
@@ -8,6 +9,24 @@ interface SectionViewsProps {
 
 export const SectionViews: React.FC<SectionViewsProps> = ({ activeRoute, onBackToOverview }) => {
   if (activeRoute === 'inicio') return null
+
+  if (activeRoute === 'usuarios') {
+    return (
+      <div className="space-y-6 animate-in fade-in duration-200">
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={onBackToOverview}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-colors cursor-pointer"
+          >
+            <i className="bi bi-arrow-left" />
+            Voltar para Início
+          </button>
+        </div>
+        <UserManagementView />
+      </div>
+    )
+  }
 
   const getSectionInfo = () => {
     switch (activeRoute) {

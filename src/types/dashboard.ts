@@ -26,9 +26,22 @@ export interface DashboardMetrics {
   last_update: string
 }
 
+export interface SystemUser {
+  id: string
+  name: string
+  email: string
+  role: 'admin' | 'operador' | 'tecnico' | 'revenda'
+  status: 'ativo' | 'inativo' | 'bloqueado'
+  empresa?: string
+  telefone?: string
+  last_sign_in?: string
+  created_at: string
+}
+
 export type ActiveRoute =
   | 'inicio'
   | 'alertas'
+  | 'usuarios'
   | 'hotspot'
   | 'hotspot-dashboard'
   | 'hotspot-planos'

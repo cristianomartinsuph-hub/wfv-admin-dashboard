@@ -10,6 +10,8 @@ interface SidebarProps {
   onCloseMobile: () => void
   isPinned: boolean
   onTogglePin: () => void
+  currentUser?: { email: string; name: string } | null
+  onOpenProfile?: () => void
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -19,6 +21,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onCloseMobile,
   isPinned,
   onTogglePin,
+  currentUser,
+  onOpenProfile,
 }) => {
   return (
     <>
@@ -198,9 +202,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div className="space-y-0.5 pt-3 border-t border-slate-700/50">
             <div className="px-3 pb-1">
               <span className="block text-[10px] font-bold uppercase tracking-widest text-slate-500 truncate">
-                Conta
+                Conta & Acesso
               </span>
             </div>
+            <SidebarItem
+              icon="bi-people-fill"
+              label="Gestão de Usuários"
+              active={activeRoute === 'usuarios'}
+              onClick={() => onNavigate('usuarios')}
+            />
             <SidebarSubmenu
               icon="bi-credit-card-2-front"
               label="ASSINATURA"
@@ -237,21 +247,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* User profile card at bottom */}
         <div className="p-3 border-t border-slate-700/50 bg-slate-900/60">
-          <div className="flex items-center gap-3 p-2 rounded-xl bg-slate-800/40 border border-slate-700/40">
-            <img
-              src="/wifivoucher.png"
-              alt="Perfil"
-              className="w-8 h-8 rounded-lg object-contain bg-slate-800 border border-slate-700"
-              onError={(e) => {
-                e.currentTarget.src = 'https://ui-avatars.com/api/?name=WFV&background=6366f1&color=fff'
-              }}
-            />
-            <div className="min-w-0 flex-1">
-              <p className="text-xs font-semibold text-slate-200 truncate">Cristiano Martins</p>
-              <p className="text-[10px] text-slate-400 truncate">cristiano@cristianomartins.net</p>
+          <button
+            type="button"
+            onClick={onOpenProfile || (() => onNavigate('usuarios'))}
+            className="w-full text-left flex items-center gap-3 p-2 rounded-xl bg-slate-800/40 hover:bg-slate-800/80 border border-slate-700/40 hover:border-indigo-500/30 transition-all cursor-pointer group"
+          >
+            <div className="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 font-bold flex items-center justify-center text-xs border border-indigo-500/30">
+              {(currentUser?.name || 'A').charAt(0).toUpperCase()}
             </div>
-            <span className="w-2 h-2 rounded-full bg-emerald-400" title="Online" />
-          </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-semibold text-slate-200 group-hover:text-indigo-300 truncate transition-colors">
+                {currentUser?.name || 'Administrador WFV'}
+              </p>
+              <p className="text-[10px] text-slate-400 truncate">
+                {currentUser?.email || 'admin@wfvadmin.com'}
+              </p>
+            </div>
+            <span className="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0" title="Online" />
+          </button>
         </div>
       </aside>
     </>

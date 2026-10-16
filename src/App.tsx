@@ -8,6 +8,8 @@ import { ConcentradoresTable } from './components/RealtimeMonitoring/Concentrado
 import { BottomNavMobile } from './components/Mobile/BottomNavMobile'
 import { SectionViews } from './components/Views/SectionViews'
 import { LoginPage } from './components/Auth/LoginPage'
+import { UserProfileModal } from './components/Users/UserProfileModal'
+import { ChangePasswordModal } from './components/Users/ChangePasswordModal'
 import { supabase } from './lib/supabase'
 import {
   initialMetrics,
@@ -19,6 +21,9 @@ import type { ActiveRoute, TimeInterval, DashboardMetrics, Concentrador } from '
 interface UserSession {
   email: string
   name: string
+  empresa?: string
+  telefone?: string
+  logo?: string
 }
 
 export function App() {
@@ -34,6 +39,10 @@ export function App() {
       return null
     }
   })
+
+  // Modals for User Profile & Password Change
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
 
   // 3. Mode: REAL PRODUCTION by default (test data removed) vs DEMO
   const [isDemoMode, setIsDemoMode] = useState(false)
@@ -84,6 +93,8 @@ export function App() {
           name:
             session.user.user_metadata?.name ||
             (session.user.email?.includes('cristiano') ? 'Cristiano Martins' : 'Administrador WFV'),
+          empresa: session.user.user_metadata?.empresa || 'WFV Telecom & Hotspot',
+          telefone: session.user.user_metadata?.telefone || '+55 (92) 98450-5812',
         }
         setCurrentUser(user)
         localStorage.setItem('wfv_admin_session', JSON.stringify(user))
@@ -99,6 +110,8 @@ export function App() {
           name:
             session.user.user_metadata?.name ||
             (session.user.email?.includes('cristiano') ? 'Cristiano Martins' : 'Administrador WFV'),
+          empresa: session.user.user_metadata?.empresa || 'WFV Telecom & Hotspot',
+          telefone: session.user.user_metadata?.telefone || '+55 (92) 98450-5812',
         }
         setCurrentUser(user)
         localStorage.setItem('wfv_admin_session', JSON.stringify(user))
@@ -181,6 +194,25 @@ export function App() {
     setCurrentUser(null)
   }
 
+  // Handle Profile Update
+  const handleUpdateProfile = (updated: {
+    name: string
+    empresa: string
+    telefone: string
+    logo?: string
+  }) => {
+    if (!currentUser) return
+    const newUser: UserSession = {
+      ...currentUser,
+      name: updated.name,
+      empresa: updated.empresa,
+      telefone: updated.telefone,
+      logo: updated.logo || currentUser.logo,
+    }
+    setCurrentUser(newUser)
+    localStorage.setItem('wfv_admin_session', JSON.stringify(newUser))
+  }
+
   const scrollToConcentradoresTable = () => {
     const el = document.getElementById('ov-tabela-concentradores')
     if (el) {
@@ -227,6 +259,8 @@ export function App() {
         onCloseMobile={() => setIsMobileOpen(false)}
         isPinned={isPinned}
         onTogglePin={() => setIsPinned(!isPinned)}
+        currentUser={currentUser}
+        onOpenProfile={() => setIsProfileModalOpen(true)}
       />
 
       {/* 2. Top Header (Fixed at top, responsive width) */}
@@ -241,6 +275,8 @@ export function App() {
         onToggleZeroMode={() => setIsDemoMode(!isDemoMode)}
         currentUser={currentUser}
         onLogout={handleLogout}
+        onOpenProfile={() => setIsProfileModalOpen(true)}
+        onOpenChangePassword={() => setIsPasswordModalOpen(true)}
       />
 
       {/* 3. Main Dashboard Workspace Content */}
@@ -297,6 +333,21 @@ export function App() {
         activeRoute={activeRoute}
         onNavigate={setActiveRoute}
         onToggleSidebar={() => setIsMobileOpen(!isMobileOpen)}
+      />
+
+      {/* 5. User Profile Modal */}
+      <UserProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        user={currentUser}
+        onUpdateUser={handleUpdateProfile}
+      />
+
+      {/* 6. Change Password Modal */}
+      <ChangePasswordModal
+        isOpen={isPasswordModalOpen}
+        onClose={() => setIsPasswordModalOpen(false)}
+        userEmail={currentUser.email}
       />
     </div>
   )
