@@ -1,6 +1,20 @@
 import React from 'react'
 import type { ActiveRoute } from '../../types/dashboard'
 import { UserManagementView } from '../Users/UserManagementView'
+import { HotspotPlanosView } from './HotspotPlanosView'
+import { HotspotClientesView } from './HotspotClientesView'
+import { HotspotTrialView } from './HotspotTrialView'
+import { HotspotRevendasView } from './HotspotRevendasView'
+import { HotspotLotesView } from './HotspotLotesView'
+import { FinanceiroPixView } from './FinanceiroPixView'
+import { RedeEquipamentosView } from './RedeEquipamentosView'
+import { IntegracoesView } from './IntegracoesView'
+import { AssinaturaView } from './AssinaturaView'
+import { AlertasView } from './AlertasView'
+import { ConsumoView } from './ConsumoView'
+import { TutoriaisLgpdView } from './TutoriaisLgpdView'
+import { RelogioView } from './RelogioView'
+import { HotspotDashboardView } from './HotspotDashboardView'
 
 interface SectionViewsProps {
   activeRoute: ActiveRoute
@@ -10,189 +24,160 @@ interface SectionViewsProps {
 export const SectionViews: React.FC<SectionViewsProps> = ({ activeRoute, onBackToOverview }) => {
   if (activeRoute === 'inicio') return null
 
-  if (activeRoute === 'usuarios') {
-    return (
-      <div className="space-y-6 animate-in fade-in duration-200">
-        <div className="flex justify-end">
-          <button
-            type="button"
-            onClick={onBackToOverview}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-colors cursor-pointer"
-          >
-            <i className="bi bi-arrow-left" />
-            Voltar para Início
-          </button>
-        </div>
-        <UserManagementView />
-      </div>
-    )
-  }
-
-  const getSectionInfo = () => {
+  // Route label for breadcrumb
+  const getRouteLabel = () => {
     switch (activeRoute) {
-      case 'vouchers':
-        return {
-          title: 'Gestão de Vouchers',
-          subtitle: 'Criação, controle de lotes, impressão e status de ativação de códigos de acesso Wi-Fi.',
-          icon: 'bi-ticket-detailed',
-          color: 'text-indigo-400',
-        }
-      case 'financeiro':
-      case 'financeiro-pix':
-      case 'devolucao-pix':
-      case 'pix-devolvidos':
-      case 'contestacoes':
-        return {
-          title: 'Financeiro & Integração PIX',
-          subtitle: 'Faturamento automatizado 24h via PIX com conciliação imediata e emissão automática.',
-          icon: 'bi-cash-coin',
-          color: 'text-emerald-400',
-        }
+      case 'usuarios': return 'Gestão de Usuários'
+      case 'hotspot':
+      case 'hotspot-dashboard': return 'Hotspot / Dashboard Operacional'
+      case 'hotspot-planos': return 'Hotspot / Planos & Tarifas'
+      case 'hotspot-clientes': return 'Hotspot / Clientes Fixos'
+      case 'hotspot-trial': return 'Hotspot / Tempo Trial Captive Portal'
+      case 'hotspot-revendas': return 'Hotspot / Revendas & Pontos de Venda'
+      case 'hotspot-lotes': return 'Hotspot / Lotes de Vouchers Impressos'
+      case 'hotspot-lotespix': return 'Hotspot / Lotes PIX Automatizados'
+      case 'vouchers': return 'Gestão de Vouchers'
+      case 'financeiro': return 'Financeiro & Visão Geral'
+      case 'financeiro-pix': return 'Financeiro / Compras PIX & Cartão'
+      case 'devolucao-pix': return 'Financeiro / Estorno e Devolução PIX'
+      case 'pix-devolvidos': return 'Financeiro / Histórico de PIX Devolvidos'
+      case 'contestacoes': return 'Financeiro / Contestações & Disputas'
       case 'relatorios':
-      case 'consumo':
-        return {
-          title: 'Relatórios & Estatísticas',
-          subtitle: 'Métricas detalhadas de tráfego de dados, pico de conexões e volume de vendas.',
-          icon: 'bi-bar-chart-line',
-          color: 'text-sky-400',
-        }
-      case 'alertas':
-        return {
-          title: 'Alertas do Sistema e Equipamentos',
-          subtitle: 'Notificações de quedas de links, reconexões de concentradores e tentativas não autorizadas.',
-          icon: 'bi-bell',
-          color: 'text-rose-400',
-        }
-      default:
-        return {
-          title: 'Gestão de Hotspots & Infraestrutura',
-          subtitle: 'Configuração de captive portal, planos tarifários e concentradores de rede.',
-          icon: 'bi-wifi',
-          color: 'text-indigo-400',
-        }
+      case 'consumo': return 'Relatórios & Consumo de Banda'
+      case 'mikrotik': return 'Rede / Equipamentos MikroTik RouterOS'
+      case 'grandstream': return 'Rede / Equipamentos Grandstream AP'
+      case 'omada': return 'Rede / Equipamentos TP-Link Omada SDN'
+      case 'tutoriais': return 'Central de Ajuda / Tutoriais'
+      case 'lgpd': return 'Privacidade & Conformidade LGPD'
+      case 'assinatura': return 'Assinatura / Planos da Plataforma'
+      case 'assinatura-faturas': return 'Assinatura / Faturas & Recibos'
+      case 'integracoes': return 'Configurações de Integrações (Gateways & WhatsApp)'
+      case 'alertas': return 'Central de Alertas & Notificações'
+      case 'relogio': return 'Relógio do Sistema & Sincronização NTP'
+      default: return 'Painel do Sistema'
     }
   }
 
-  const info = getSectionInfo()
+  const renderContent = () => {
+    switch (activeRoute) {
+      case 'usuarios':
+        return <UserManagementView />
+
+      case 'hotspot':
+      case 'hotspot-dashboard':
+        return <HotspotDashboardView />
+
+      case 'hotspot-planos':
+        return <HotspotPlanosView />
+
+      case 'hotspot-clientes':
+        return <HotspotClientesView />
+
+      case 'hotspot-trial':
+        return <HotspotTrialView />
+
+      case 'hotspot-revendas':
+        return <HotspotRevendasView />
+
+      case 'hotspot-lotes':
+        return <HotspotLotesView mode="lotes" />
+
+      case 'hotspot-lotespix':
+        return <HotspotLotesView mode="lotespix" />
+
+      case 'vouchers':
+        return <HotspotLotesView mode="vouchers" />
+
+      case 'financeiro':
+        return <FinanceiroPixView route="financeiro" />
+
+      case 'financeiro-pix':
+        return <FinanceiroPixView route="financeiro-pix" />
+
+      case 'devolucao-pix':
+        return <FinanceiroPixView route="devolucao-pix" />
+
+      case 'pix-devolvidos':
+        return <FinanceiroPixView route="pix-devolvidos" />
+
+      case 'contestacoes':
+        return <FinanceiroPixView route="contestacoes" />
+
+      case 'relatorios':
+      case 'consumo':
+        return <ConsumoView />
+
+      case 'mikrotik':
+        return <RedeEquipamentosView deviceType="mikrotik" />
+
+      case 'grandstream':
+        return <RedeEquipamentosView deviceType="grandstream" />
+
+      case 'omada':
+        return <RedeEquipamentosView deviceType="omada" />
+
+      case 'tutoriais':
+        return <TutoriaisLgpdView mode="tutoriais" />
+
+      case 'lgpd':
+        return <TutoriaisLgpdView mode="lgpd" />
+
+      case 'assinatura':
+        return <AssinaturaView mode="planos" />
+
+      case 'assinatura-faturas':
+        return <AssinaturaView mode="faturas" />
+
+      case 'integracoes':
+        return <IntegracoesView />
+
+      case 'alertas':
+        return <AlertasView />
+
+      case 'relogio':
+        return <RelogioView />
+
+      default:
+        return (
+          <div className="p-8 text-center bg-slate-900 border border-slate-800 rounded-2xl">
+            <i className="bi bi-info-circle text-4xl text-indigo-400 mb-3 block" />
+            <p className="text-slate-300 font-medium">Selecione uma opção no menu lateral para visualizar.</p>
+          </div>
+        )
+    }
+  }
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-200">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-indigo-500/10 dark:bg-indigo-500/20 border border-indigo-500/20 flex items-center justify-center">
-            <i className={`bi ${info.icon} ${info.color} text-xl`} />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-slate-800 dark:text-white tracking-tight">
-              {info.title}
-            </h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400">{info.subtitle}</p>
-          </div>
+    <div className="space-y-4 animate-in fade-in duration-200">
+      {/* Universal Breadcrumb / Back Bar */}
+      <div className="flex items-center justify-between bg-white dark:bg-slate-900/80 backdrop-blur-md border border-slate-200 dark:border-slate-800 px-4 py-2.5 rounded-xl shadow-xs">
+        <div className="flex items-center gap-2 text-xs">
+          <button
+            type="button"
+            onClick={onBackToOverview}
+            className="text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center gap-1 font-medium transition-colors cursor-pointer"
+          >
+            <i className="bi bi-speedometer2" />
+            Início
+          </button>
+          <span className="text-slate-300 dark:text-slate-600">/</span>
+          <span className="text-slate-800 dark:text-indigo-400 font-semibold truncate">
+            {getRouteLabel()}
+          </span>
         </div>
 
         <button
           type="button"
           onClick={onBackToOverview}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-colors"
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-all cursor-pointer shadow-xs active:scale-95"
         >
           <i className="bi bi-arrow-left" />
-          Voltar para Início
+          <span>Voltar para Início</span>
         </button>
       </div>
 
-      {/* Dynamic Content based on section */}
-      {activeRoute === 'vouchers' && (
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl p-4">
-              <span className="text-xs text-slate-500 dark:text-slate-400">Total Emitidos Hoje</span>
-              <p className="text-2xl font-bold text-slate-800 dark:text-white mt-1">328</p>
-              <span className="text-[10px] text-emerald-400 font-semibold">+14% em relação a ontem</span>
-            </div>
-            <div className="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl p-4">
-              <span className="text-xs text-slate-500 dark:text-slate-400">Vouchers Ativos Agora</span>
-              <p className="text-2xl font-bold text-emerald-400 mt-1">142</p>
-              <span className="text-[10px] text-slate-400">Tempo restante médio: 3h 45m</span>
-            </div>
-            <div className="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl p-4">
-              <span className="text-xs text-slate-500 dark:text-slate-400">Lotes Gerados</span>
-              <p className="text-2xl font-bold text-indigo-400 mt-1">18</p>
-              <span className="text-[10px] text-slate-400">Prontos para impressão / revenda</span>
-            </div>
-          </div>
-
-          <div className="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl p-5">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-semibold text-slate-800 dark:text-white">
-                Vouchers Recentes Emitidos via PIX
-              </h3>
-              <button
-                type="button"
-                className="px-3 py-1.5 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors flex items-center gap-1.5 shadow-sm"
-              >
-                <i className="bi bi-plus-circle" /> Gerar Novo Lote
-              </button>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs text-left text-slate-600 dark:text-slate-300">
-                <thead>
-                  <tr className="border-b border-slate-200 dark:border-slate-800 text-[10px] uppercase font-bold text-slate-500">
-                    <th className="py-2.5 px-3">Código Voucher</th>
-                    <th className="py-2.5 px-3">Plano</th>
-                    <th className="py-2.5 px-3">Valor</th>
-                    <th className="py-2.5 px-3">Hotspot Destino</th>
-                    <th className="py-2.5 px-3">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
-                  {[
-                    { code: 'WFV-9842-AX', plan: '2 Horas Ilimitado', val: 'R$ 5,00', spot: 'Central-Mikrotik-01', status: 'Ativo' },
-                    { code: 'WFV-7712-BT', plan: '12 Horas VIP', val: 'R$ 15,00', spot: 'Hotspot-Shopping-Norte', status: 'Ativo' },
-                    { code: 'WFV-3310-QR', plan: '24 Horas Turbo', val: 'R$ 25,00', spot: 'Grandstream-Hotel-Orla', status: 'Ativo' },
-                    { code: 'WFV-5509-ZP', plan: '1 Hora Básico', val: 'R$ 3,00', spot: 'AP-Praca-Alimentacao', status: 'Concluído' },
-                  ].map((row, i) => (
-                    <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-850">
-                      <td className="py-2.5 px-3 font-mono font-bold text-indigo-400">{row.code}</td>
-                      <td className="py-2.5 px-3 font-medium">{row.plan}</td>
-                      <td className="py-2.5 px-3 font-bold text-emerald-400">{row.val}</td>
-                      <td className="py-2.5 px-3 text-slate-400">{row.spot}</td>
-                      <td className="py-2.5 px-3">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${row.status === 'Ativo' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-slate-500/15 text-slate-400'}`}>
-                          {row.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {(activeRoute.startsWith('financeiro') || activeRoute === 'relatorios') && (
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl p-5">
-              <span className="text-xs text-slate-500 dark:text-slate-400">Faturamento Hoje (PIX)</span>
-              <p className="text-3xl font-extrabold text-emerald-400 mt-2 font-mono">R$ 1.845,00</p>
-              <span className="text-[10px] text-emerald-400 flex items-center gap-1 mt-1">
-                <i className="bi bi-arrow-up-right" /> 18.2% acima da média
-              </span>
-            </div>
-            <div className="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl p-5">
-              <span className="text-xs text-slate-500 dark:text-slate-400">Total Transações PIX</span>
-              <p className="text-3xl font-extrabold text-slate-800 dark:text-white mt-2 font-mono">148</p>
-              <span className="text-[10px] text-slate-400">100% liquidadas instantaneamente</span>
-            </div>
-            <div className="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl p-5">
-              <span className="text-xs text-slate-500 dark:text-slate-400">Ticket Médio</span>
-              <p className="text-3xl font-extrabold text-indigo-400 mt-2 font-mono">R$ 12,46</p>
-              <span className="text-[10px] text-slate-400">Plano mais vendido: 12 Horas</span>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Render the specialized functional view */}
+      {renderContent()}
     </div>
   )
 }

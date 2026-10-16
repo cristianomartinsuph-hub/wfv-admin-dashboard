@@ -64,5 +64,6 @@ export type ActiveRoute =
   | 'tutoriais'
   | 'lgpd'
   | 'assinatura'
+  | 'assinatura-faturas'
   | 'integracoes'
   | 'relogio'
