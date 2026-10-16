@@ -12,41 +12,7 @@ export interface HotspotSession {
   concentrador: string
 }
 
-const DEFAULT_SESSIONS: HotspotSession[] = [
-  {
-    id: 's1',
-    ip: '192.168.88.241',
-    mac: 'FC:E8:29:10:99:BB',
-    usuario_voucher: 'CMS-9842-AX',
-    tempo_conectado: '34 min',
-    tempo_restante: '1h 26m',
-    download: '124 MB',
-    upload: '18 MB',
-    concentrador: 'Central-Mikrotik-01',
-  },
-  {
-    id: 's2',
-    ip: '192.168.88.192',
-    mac: '28:6F:7F:31:AA:CC',
-    usuario_voucher: 'CMS-7712-BT',
-    tempo_conectado: '4h 12m',
-    tempo_restante: '7h 48m',
-    download: '1.4 GB',
-    upload: '120 MB',
-    concentrador: 'Hotspot-Shopping-Norte',
-  },
-  {
-    id: 's3',
-    ip: '192.168.88.105',
-    mac: '40:88:05:6E:71:32',
-    usuario_voucher: 'CMS-3310-QR',
-    tempo_conectado: '18h 40m',
-    tempo_restante: '5h 20m',
-    download: '4.8 GB',
-    upload: '380 MB',
-    concentrador: 'Grandstream-Hotel-Orla',
-  },
-]
+const DEFAULT_SESSIONS: HotspotSession[] = []
 
 export const HotspotDashboardView: React.FC = () => {
   const [sessions, setSessions] = useState<HotspotSession[]>(DEFAULT_SESSIONS)

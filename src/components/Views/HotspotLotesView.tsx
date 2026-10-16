@@ -22,92 +22,6 @@ export interface LoteItem {
   tipo: 'impresso' | 'pix'
 }
 
-const DEFAULT_LOTES: LoteItem[] = [
-  {
-    id: 'lote-1',
-    codigo_lote: 'LOTE-2026-001',
-    plano: '2 Horas Padrão',
-    quantidade: 50,
-    usados: 38,
-    criado_em: '2026-10-12',
-    tipo: 'impresso',
-  },
-  {
-    id: 'lote-2',
-    codigo_lote: 'LOTE-2026-002',
-    plano: '12 Horas VIP',
-    quantidade: 30,
-    usados: 14,
-    criado_em: '2026-10-14',
-    tipo: 'impresso',
-  },
-  {
-    id: 'lote-3',
-    codigo_lote: 'PIX-AUTO-OUTUBRO',
-    plano: '24 Horas Turbo',
-    quantidade: 100,
-    usados: 67,
-    criado_em: '2026-10-15',
-    tipo: 'pix',
-  },
-]
-
-const DEFAULT_VOUCHERS: VoucherItem[] = [
-  {
-    id: 'v1',
-    codigo: 'CMS-9842-AX',
-    plano: '2 Horas Padrão',
-    valor: 5.0,
-    lote_id: 'LOTE-2026-001',
-    status: 'ativo',
-    usado_por: 'FC:E8:29:10:99:BB (iPhone 14)',
-    criado_em: '2026-10-15 08:30',
-    expira_em: '2026-10-15 10:30',
-  },
-  {
-    id: 'v2',
-    codigo: 'CMS-7712-BT',
-    plano: '12 Horas VIP',
-    valor: 15.0,
-    lote_id: 'LOTE-2026-002',
-    status: 'ativo',
-    usado_por: '28:6F:7F:31:AA:CC (Galaxy S23)',
-    criado_em: '2026-10-15 07:15',
-    expira_em: '2026-10-15 19:15',
-  },
-  {
-    id: 'v3',
-    codigo: 'CMS-3310-QR',
-    plano: '24 Horas Turbo',
-    valor: 25.0,
-    lote_id: 'PIX-AUTO-OUTUBRO',
-    status: 'ativo',
-    usado_por: '40:88:05:6E:71:32 (MacBook Pro)',
-    criado_em: '2026-10-15 06:10',
-    expira_em: '2026-10-16 06:10',
-  },
-  {
-    id: 'v4',
-    codigo: 'CMS-5509-ZP',
-    plano: '1 Hora Básico',
-    valor: 3.0,
-    lote_id: 'LOTE-2026-001',
-    status: 'disponivel',
-    criado_em: '2026-10-14 14:00',
-  },
-  {
-    id: 'v5',
-    codigo: 'CMS-8821-KL',
-    plano: '2 Horas Padrão',
-    valor: 5.0,
-    lote_id: 'LOTE-2026-001',
-    status: 'expirado',
-    usado_por: '90:32:4B:21:00:19',
-    criado_em: '2026-10-13 10:00',
-    expira_em: '2026-10-13 12:00',
-  },
-]
-
 interface HotspotLotesViewProps {
   mode?: 'lotes' | 'lotespix' | 'vouchers'
 }
@@ -116,18 +30,22 @@ export const HotspotLotesView: React.FC<HotspotLotesViewProps> = ({ mode = 'vouc
   const [lotes, setLotes] = useState<LoteItem[]>(() => {
     try {
       const saved = localStorage.getItem('wfv_lotes')
-      return saved ? JSON.parse(saved) : DEFAULT_LOTES
+      if (!saved) return []
+      const parsed = JSON.parse(saved)
+      return Array.isArray(parsed) ? parsed.filter((l: LoteItem) => !l.id?.startsWith('lote-')) : []
     } catch {
-      return DEFAULT_LOTES
+      return []
     }
   })
 
   const [vouchers, setVouchers] = useState<VoucherItem[]>(() => {
     try {
       const saved = localStorage.getItem('wfv_vouchers_list')
-      return saved ? JSON.parse(saved) : DEFAULT_VOUCHERS
+      if (!saved) return []
+      const parsed = JSON.parse(saved)
+      return Array.isArray(parsed) ? parsed.filter((v: VoucherItem) => !['v1', 'v2', 'v3', 'v4', 'v5'].includes(v.id)) : []
     } catch {
-      return DEFAULT_VOUCHERS
+      return []
     }
   })
 
@@ -425,76 +343,95 @@ export const HotspotLotesView: React.FC<HotspotLotesViewProps> = ({ mode = 'vouc
             </div>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left text-slate-600 dark:text-slate-300">
-              <thead>
-                <tr className="bg-slate-100 dark:bg-slate-800/90 border-b border-slate-200 dark:border-slate-800 text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 tracking-wider">
-                  <th className="px-5 py-3">Código Voucher</th>
-                  <th className="px-5 py-3">Plano</th>
-                  <th className="px-5 py-3">Valor</th>
-                  <th className="px-5 py-3 hidden md:table-cell">Lote</th>
-                  <th className="px-5 py-3 hidden lg:table-cell">Dispositivo (MAC)</th>
-                  <th className="px-5 py-3">Status</th>
-                  <th className="px-5 py-3 text-right">Ação</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
-                {filteredVouchers.map((v) => (
-                  <tr key={v.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
-                    <td className="px-5 py-3 font-mono font-bold text-indigo-400 whitespace-nowrap">
-                      {v.codigo}
-                    </td>
-                    <td className="px-5 py-3 whitespace-nowrap font-medium text-slate-800 dark:text-white">
-                      {v.plano}
-                    </td>
-                    <td className="px-5 py-3 font-mono font-bold text-emerald-400 whitespace-nowrap">
-                      R$ {v.valor.toFixed(2).replace('.', ',')}
-                    </td>
-                    <td className="px-5 py-3 font-mono text-slate-500 dark:text-slate-400 hidden md:table-cell whitespace-nowrap">
-                      {v.lote_id}
-                    </td>
-                    <td className="px-5 py-3 font-mono text-slate-400 hidden lg:table-cell whitespace-nowrap">
-                      {v.usado_por || '—'}
-                    </td>
-                    <td className="px-5 py-3 whitespace-nowrap">
-                      <span
-                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                          v.status === 'ativo'
-                            ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
-                            : v.status === 'disponivel'
-                            ? 'bg-indigo-500/15 text-indigo-400 border border-indigo-500/30'
-                            : 'bg-slate-500/15 text-slate-400'
-                        }`}
-                      >
-                        {v.status === 'ativo'
-                          ? 'Conectado'
-                          : v.status === 'disponivel'
-                          ? 'Disponível'
-                          : 'Expirado'}
-                      </span>
-                    </td>
-                    <td className="px-5 py-3 text-right whitespace-nowrap">
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteVoucher(v.id)}
-                        className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer"
-                        title="Excluir"
-                      >
-                        <i className="bi bi-trash3 text-xs" />
-                      </button>
-                    </td>
+          {filteredVouchers.length === 0 ? (
+            <div className="p-12 text-center text-slate-400 space-y-2">
+              <i className="bi bi-ticket-perforated text-3xl text-slate-500" />
+              <p className="text-sm font-medium text-slate-300">Nenhum voucher gerado ainda</p>
+              <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                Clique no botão <strong>Gerar Novo Lote de Vouchers</strong> acima para criar vouchers reais para seus clientes.
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left text-slate-600 dark:text-slate-300">
+                <thead>
+                  <tr className="bg-slate-100 dark:bg-slate-800/90 border-b border-slate-200 dark:border-slate-800 text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 tracking-wider">
+                    <th className="px-5 py-3">Código Voucher</th>
+                    <th className="px-5 py-3">Plano</th>
+                    <th className="px-5 py-3">Valor</th>
+                    <th className="px-5 py-3 hidden md:table-cell">Lote</th>
+                    <th className="px-5 py-3 hidden lg:table-cell">Dispositivo (MAC)</th>
+                    <th className="px-5 py-3">Status</th>
+                    <th className="px-5 py-3 text-right">Ação</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
+                  {filteredVouchers.map((v) => (
+                    <tr key={v.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
+                      <td className="px-5 py-3 font-mono font-bold text-indigo-400 whitespace-nowrap">
+                        {v.codigo}
+                      </td>
+                      <td className="px-5 py-3 whitespace-nowrap font-medium text-slate-800 dark:text-white">
+                        {v.plano}
+                      </td>
+                      <td className="px-5 py-3 font-mono font-bold text-emerald-400 whitespace-nowrap">
+                        R$ {v.valor.toFixed(2).replace('.', ',')}
+                      </td>
+                      <td className="px-5 py-3 font-mono text-slate-500 dark:text-slate-400 hidden md:table-cell whitespace-nowrap">
+                        {v.lote_id}
+                      </td>
+                      <td className="px-5 py-3 font-mono text-slate-400 hidden lg:table-cell whitespace-nowrap">
+                        {v.usado_por || '—'}
+                      </td>
+                      <td className="px-5 py-3 whitespace-nowrap">
+                        <span
+                          className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                            v.status === 'ativo'
+                              ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+                              : v.status === 'disponivel'
+                              ? 'bg-indigo-500/15 text-indigo-400 border border-indigo-500/30'
+                              : 'bg-slate-500/15 text-slate-400'
+                          }`}
+                        >
+                          {v.status === 'ativo'
+                            ? 'Conectado'
+                            : v.status === 'disponivel'
+                            ? 'Disponível'
+                            : 'Expirado'}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3 text-right whitespace-nowrap">
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteVoucher(v.id)}
+                          className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer"
+                          title="Excluir"
+                        >
+                          <i className="bi bi-trash3 text-xs" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
 
       {/* Tab: Controle de Lotes */}
       {activeTab === 'lotes' && (
         <div className="bg-white dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
+          {filteredLotes.length === 0 ? (
+            <div className="p-12 text-center text-slate-400 space-y-2">
+              <i className="bi bi-collection text-3xl text-slate-500" />
+              <p className="text-sm font-medium text-slate-300">Nenhum lote gerado ainda</p>
+              <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                Crie um lote de vouchers clicando no botão <strong>Gerar Novo Lote de Vouchers</strong> acima.
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
             <table className="w-full text-xs text-left text-slate-600 dark:text-slate-300">
               <thead>
                 <tr className="bg-slate-100 dark:bg-slate-800/90 border-b border-slate-200 dark:border-slate-800 text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 tracking-wider">
@@ -558,6 +495,7 @@ export const HotspotLotesView: React.FC<HotspotLotesViewProps> = ({ mode = 'vouc
               </tbody>
             </table>
           </div>
+          )}
         </div>
       )}
 

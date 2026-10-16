@@ -13,52 +13,15 @@ export interface Revenda {
   criado_em: string
 }
 
-const DEFAULT_REVENDAS: Revenda[] = [
-  {
-    id: '1',
-    nome: 'Banca Central Praça da Matriz',
-    responsavel: 'José Carlos',
-    telefone: '+55 (11) 98765-1122',
-    cidade: 'São Paulo - SP',
-    saldo: 150.0,
-    comissao_pct: 20,
-    vouchers_vendidos: 342,
-    status: 'ativo',
-    criado_em: '2026-09-15',
-  },
-  {
-    id: '2',
-    nome: 'Quiosque da Praia Bar e Coco',
-    responsavel: 'Mariana Silva',
-    telefone: '+55 (13) 99123-4455',
-    cidade: 'Santos - SP',
-    saldo: 80.0,
-    comissao_pct: 25,
-    vouchers_vendidos: 580,
-    status: 'ativo',
-    criado_em: '2026-09-20',
-  },
-  {
-    id: '3',
-    nome: 'Cafeteria & Conveniência Aeroporto',
-    responsavel: 'Eduardo Ramos',
-    telefone: '+55 (11) 97788-9900',
-    cidade: 'Guarulhos - SP',
-    saldo: 320.0,
-    comissao_pct: 15,
-    vouchers_vendidos: 890,
-    status: 'ativo',
-    criado_em: '2026-10-01',
-  },
-]
-
 export const HotspotRevendasView: React.FC = () => {
   const [revendas, setRevendas] = useState<Revenda[]>(() => {
     try {
       const saved = localStorage.getItem('wfv_revendas')
-      return saved ? JSON.parse(saved) : DEFAULT_REVENDAS
+      if (!saved) return []
+      const parsed = JSON.parse(saved)
+      return Array.isArray(parsed) ? parsed.filter((r: Revenda) => !['1', '2', '3'].includes(r.id)) : []
     } catch {
-      return DEFAULT_REVENDAS
+      return []
     }
   })
 
@@ -248,8 +211,15 @@ export const HotspotRevendasView: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
-              {filtered.map((r) => (
-                <tr key={r.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
+              {filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="text-center py-10 text-slate-400 text-xs">
+                    Nenhum ponto de revenda ou parceiro cadastrado.
+                  </td>
+                </tr>
+              ) : (
+                filtered.map((r) => (
+                  <tr key={r.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
                   <td className="px-5 py-3 whitespace-nowrap">
                     <p className="font-semibold text-slate-800 dark:text-white">{r.nome}</p>
                     <p className="text-[11px] text-slate-400 font-mono">{r.telefone}</p>
@@ -307,7 +277,7 @@ export const HotspotRevendasView: React.FC = () => {
                     </div>
                   </td>
                 </tr>
-              ))}
+              )))}
             </tbody>
           </table>
         </div>

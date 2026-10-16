@@ -383,34 +383,48 @@ add name="VIP-Ilimitado" rate-limit="30M/15M" shared-users=2 status-autorefresh=
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
-                  {[
-                    { id: '1', nome: identidade, modelo: 'MikroTik RouterOS (RB750 / hEX / CCR)', ip: ipSemMascara, ros: 'v7.x / v6.x', status: 'ON' },
-                  ].map((r) => (
-                    <tr key={r.id} className="hover:bg-slate-50 dark:hover:bg-slate-850">
-                      <td className="px-5 py-3 font-semibold text-slate-800 dark:text-white flex items-center gap-2">
-                        <i className="bi bi-router text-sky-400" />
-                        {r.nome}
-                      </td>
-                      <td className="px-5 py-3 text-slate-400">{r.modelo}</td>
-                      <td className="px-5 py-3 font-mono text-sky-400">{r.ip}</td>
-                      <td className="px-5 py-3 font-mono text-slate-400">{r.ros}</td>
-                      <td className="px-5 py-3">
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400">
-                          PRONTO
-                        </span>
-                      </td>
-                      <td className="px-5 py-3 text-right">
-                        <button
-                          type="button"
-                          disabled={testingId === r.id}
-                          onClick={() => handleTestPing(r.id, r.ip)}
-                          className="px-2.5 py-1 text-xs font-semibold bg-sky-600/15 text-sky-400 hover:bg-sky-600/25 border border-sky-500/30 rounded-lg transition-colors cursor-pointer"
-                        >
-                          {testingId === r.id ? 'Testando...' : 'Testar Conexão'}
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  {(() => {
+                    let list: any[] = []
+                    try {
+                      const saved = localStorage.getItem('wfv_real_concentradores')
+                      list = saved ? JSON.parse(saved) : []
+                    } catch {}
+                    if (!list || list.length === 0) {
+                      return (
+                        <tr>
+                          <td colSpan={6} className="text-center py-8 text-slate-400">
+                            Nenhum roteador MikroTik cadastrado ainda. Use os parâmetros e o script acima para conectar seu primeiro roteador real.
+                          </td>
+                        </tr>
+                      )
+                    }
+                    return list.map((r) => (
+                      <tr key={r.id} className="hover:bg-slate-50 dark:hover:bg-slate-850">
+                        <td className="px-5 py-3 font-semibold text-slate-800 dark:text-white flex items-center gap-2">
+                          <i className="bi bi-router text-sky-400" />
+                          {r.apelido || r.identidade}
+                        </td>
+                        <td className="px-5 py-3 text-slate-400">{r.modelo || 'MikroTik RouterOS'}</td>
+                        <td className="px-5 py-3 font-mono text-sky-400">{r.ip}</td>
+                        <td className="px-5 py-3 font-mono text-slate-400">v7.x / v6.x</td>
+                        <td className="px-5 py-3">
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${r.online === 1 ? 'bg-emerald-500/15 text-emerald-400' : 'bg-rose-500/15 text-rose-400'}`}>
+                            {r.online === 1 ? 'ONLINE' : 'OFFLINE'}
+                          </span>
+                        </td>
+                        <td className="px-5 py-3 text-right">
+                          <button
+                            type="button"
+                            disabled={testingId === r.id}
+                            onClick={() => handleTestPing(r.id, r.ip)}
+                            className="px-2.5 py-1 text-xs font-semibold bg-sky-600/15 text-sky-400 hover:bg-sky-600/25 border border-sky-500/30 rounded-lg transition-colors cursor-pointer"
+                          >
+                            {testingId === r.id ? 'Testando...' : 'Testar Conexão'}
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  })()}
                 </tbody>
               </table>
             </div>

@@ -9,48 +9,15 @@ export interface AlertaItem {
   lido: boolean
 }
 
-const DEFAULT_ALERTAS: AlertaItem[] = [
-  {
-    id: '1',
-    titulo: 'Venda PIX Aprovada',
-    mensagem: 'Voucher 24h emitido para hotspot Central-Mikrotik-01 no valor de R$ 25,00.',
-    tipo: 'sucesso',
-    data_hora: 'Hoje às 08:32',
-    lido: false,
-  },
-  {
-    id: '2',
-    titulo: 'Novo Concentrador Sincronizado',
-    mensagem: 'MikroTik hEX RB750Gr3 estabeleceu túnel WireGuard com sucesso.',
-    tipo: 'info',
-    data_hora: 'Hoje às 07:15',
-    lido: false,
-  },
-  {
-    id: '3',
-    titulo: 'Aviso de Renovação de Licença',
-    mensagem: 'A fatura de Outubro do CMS_Hotspot vence em 25/10/2026.',
-    tipo: 'aviso',
-    data_hora: 'Ontem às 14:00',
-    lido: true,
-  },
-  {
-    id: '4',
-    titulo: 'Queda Temporária de Link',
-    mensagem: 'AP-Externo-Praia perdeu sincronia por 45 segundos e reconectou normalmente.',
-    tipo: 'critico',
-    data_hora: '14/10/2026 22:18',
-    lido: true,
-  },
-]
-
 export const AlertasView: React.FC = () => {
   const [alertas, setAlertas] = useState<AlertaItem[]>(() => {
     try {
       const saved = localStorage.getItem('wfv_alertas_list')
-      return saved ? JSON.parse(saved) : DEFAULT_ALERTAS
+      if (!saved) return []
+      const parsed = JSON.parse(saved)
+      return Array.isArray(parsed) ? parsed.filter((a: AlertaItem) => !['1', '2', '3', '4'].includes(a.id)) : []
     } catch {
-      return DEFAULT_ALERTAS
+      return []
     }
   })
 

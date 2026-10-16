@@ -12,49 +12,15 @@ export interface ClienteFixo {
   observacao?: string
 }
 
-const DEFAULT_CLIENTES: ClienteFixo[] = [
-  {
-    id: '1',
-    nome: 'Recepção / Tablet Check-in',
-    mac: '00:1A:2B:3C:4D:5E',
-    ip: '192.168.88.10',
-    plano: 'Acesso VIP Ilimitado',
-    concentrador: 'Central-Mikrotik-01',
-    status: 'ativo',
-    criado_em: '2026-10-10',
-    observacao: 'Tablet de autoatendimento da entrada',
-  },
-  {
-    id: '2',
-    nome: 'Maquininha de Cartão POS 01',
-    mac: '44:65:0D:88:99:AA',
-    ip: '192.168.88.25',
-    plano: 'Prioridade POS (10M)',
-    concentrador: 'Central-Mikrotik-01',
-    status: 'ativo',
-    criado_em: '2026-10-12',
-    observacao: 'POS RedeStone Caixa 1',
-  },
-  {
-    id: '3',
-    nome: 'Gerência / Notebook Dell',
-    mac: 'BC:D0:74:11:22:33',
-    ip: '192.168.88.50',
-    plano: 'Acesso VIP Ilimitado',
-    concentrador: 'Central-Mikrotik-01',
-    status: 'ativo',
-    criado_em: '2026-10-14',
-    observacao: 'Diretoria sem tela de captive portal',
-  },
-]
-
 export const HotspotClientesView: React.FC = () => {
   const [clientes, setClientes] = useState<ClienteFixo[]>(() => {
     try {
       const saved = localStorage.getItem('wfv_clientes_fixos')
-      return saved ? JSON.parse(saved) : DEFAULT_CLIENTES
+      if (!saved) return []
+      const parsed = JSON.parse(saved)
+      return Array.isArray(parsed) ? parsed.filter((c: ClienteFixo) => !['1', '2', '3'].includes(c.id)) : []
     } catch {
-      return DEFAULT_CLIENTES
+      return []
     }
   })
 

@@ -84,6 +84,54 @@ export function App() {
     }
   }, [isDarkMode])
 
+  // One-time automatic cleanup to ensure all old test data on Vercel is completely cleared
+  useEffect(() => {
+    try {
+      if (!localStorage.getItem('cms_hotspot_clean_v3')) {
+        const preserveSession = localStorage.getItem('wfv_admin_session')
+        const keysToRemove = [
+          'wfv_real_concentradores',
+          'wfv_lotes',
+          'wfv_vouchers_list',
+          'wfv_clientes_fixos',
+          'wfv_revendas',
+          'wfv_pix_transactions',
+          'wfv_alertas_list',
+          'wfv_consumo_devices',
+        ]
+        keysToRemove.forEach((k) => localStorage.removeItem(k))
+        localStorage.setItem('cms_hotspot_clean_v3', 'true')
+        if (preserveSession) {
+          localStorage.setItem('wfv_admin_session', preserveSession)
+        }
+        setRealConcentradores([])
+      }
+    } catch {}
+  }, [])
+
+  // Manual Clear All Data Handler
+  const handleClearAllData = () => {
+    if (window.confirm('Deseja realmente zerar todos os dados do painel? Concentradores, lotes, vouchers e clientes serão limpos.')) {
+      const preserveSession = localStorage.getItem('wfv_admin_session')
+      const keysToRemove = [
+        'wfv_real_concentradores',
+        'wfv_lotes',
+        'wfv_vouchers_list',
+        'wfv_clientes_fixos',
+        'wfv_revendas',
+        'wfv_pix_transactions',
+        'wfv_alertas_list',
+        'wfv_consumo_devices',
+      ]
+      keysToRemove.forEach((k) => localStorage.removeItem(k))
+      if (preserveSession) {
+        localStorage.setItem('wfv_admin_session', preserveSession)
+      }
+      setRealConcentradores([])
+      window.location.reload()
+    }
+  }
+
   // Check Supabase session on mount
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -271,8 +319,7 @@ export function App() {
         isLiveSimulating={isDemoMode}
         onToggleLiveSimulation={() => setIsDemoMode(!isDemoMode)}
         notificationCount={0}
-        isZeroMode={!isDemoMode}
-        onToggleZeroMode={() => setIsDemoMode(!isDemoMode)}
+        onClearAllData={handleClearAllData}
         currentUser={currentUser}
         onLogout={handleLogout}
         onOpenProfile={() => setIsProfileModalOpen(true)}

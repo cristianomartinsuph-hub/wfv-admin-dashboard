@@ -12,61 +12,6 @@ export interface PixTransaction {
   motivo_devolucao?: string
 }
 
-const DEFAULT_TRANSACTIONS: PixTransaction[] = [
-  {
-    id: 'tx-101',
-    endToEndId: 'E1823612020261015143000928172',
-    cliente: 'Marcos Aurelio Santos',
-    cpf: '***.482.918-**',
-    valor: 15.0,
-    status: 'aprovado',
-    data_hora: '2026-10-15 14:30:12',
-    voucher_codigo: 'CMS-7712-BT',
-  },
-  {
-    id: 'tx-102',
-    endToEndId: 'E1823612020261015132200817263',
-    cliente: 'Camila Ferreira Lima',
-    cpf: '***.901.233-**',
-    valor: 5.0,
-    status: 'aprovado',
-    data_hora: '2026-10-15 13:22:05',
-    voucher_codigo: 'CMS-9842-AX',
-  },
-  {
-    id: 'tx-103',
-    endToEndId: 'E1823612020261015111000728190',
-    cliente: 'Rodrigo Medeiros',
-    cpf: '***.112.980-**',
-    valor: 25.0,
-    status: 'aprovado',
-    data_hora: '2026-10-15 11:10:44',
-    voucher_codigo: 'CMS-3310-QR',
-  },
-  {
-    id: 'tx-104',
-    endToEndId: 'E1823612020261014164500619283',
-    cliente: 'Luciana Albuquerque',
-    cpf: '***.773.120-**',
-    valor: 15.0,
-    status: 'devolvido',
-    data_hora: '2026-10-14 16:45:00',
-    voucher_codigo: 'CMS-1102-LK',
-    motivo_devolucao: 'Pagamento duplicado pelo cliente',
-  },
-  {
-    id: 'tx-105',
-    endToEndId: 'E1823612020261014101200554411',
-    cliente: 'Felipe Goncalves',
-    cpf: '***.344.890-**',
-    valor: 60.0,
-    status: 'contestacao',
-    data_hora: '2026-10-14 10:12:18',
-    voucher_codigo: 'CMS-7788-SEM',
-    motivo_devolucao: 'Contestação MED em análise pelo banco',
-  },
-]
-
 interface FinanceiroPixViewProps {
   route: string
 }
@@ -75,9 +20,11 @@ export const FinanceiroPixView: React.FC<FinanceiroPixViewProps> = ({ route }) =
   const [transactions, setTransactions] = useState<PixTransaction[]>(() => {
     try {
       const saved = localStorage.getItem('wfv_pix_transactions')
-      return saved ? JSON.parse(saved) : DEFAULT_TRANSACTIONS
+      if (!saved) return []
+      const parsed = JSON.parse(saved)
+      return Array.isArray(parsed) ? parsed.filter((t: PixTransaction) => !t.id?.startsWith('tx-')) : []
     } catch {
-      return DEFAULT_TRANSACTIONS
+      return []
     }
   })
 
@@ -354,8 +301,15 @@ export const FinanceiroPixView: React.FC<FinanceiroPixViewProps> = ({ route }) =
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
-                {filtered.map((t) => (
-                  <tr key={t.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
+                {filtered.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="text-center py-10 text-slate-400 text-xs">
+                      Nenhuma transação PIX registrada.
+                    </td>
+                  </tr>
+                ) : (
+                  filtered.map((t) => (
+                    <tr key={t.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
                     <td className="px-5 py-3 whitespace-nowrap">
                       <p className="font-semibold text-slate-800 dark:text-white">{t.cliente}</p>
                       <p className="text-[10px] text-slate-400 font-mono">{t.cpf}</p>
@@ -390,7 +344,7 @@ export const FinanceiroPixView: React.FC<FinanceiroPixViewProps> = ({ route }) =
                       {t.data_hora}
                     </td>
                   </tr>
-                ))}
+                )))}
               </tbody>
             </table>
           </div>

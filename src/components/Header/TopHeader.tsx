@@ -7,8 +7,7 @@ interface TopHeaderProps {
   isLiveSimulating: boolean
   onToggleLiveSimulation: () => void
   notificationCount: number
-  isZeroMode?: boolean
-  onToggleZeroMode?: () => void
+  onClearAllData?: () => void
   currentUser?: { email: string; name: string } | null
   onLogout?: () => void
   onOpenProfile?: () => void
@@ -22,8 +21,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
   isLiveSimulating,
   onToggleLiveSimulation,
   notificationCount,
-  isZeroMode = false,
-  onToggleZeroMode,
+  onClearAllData,
   currentUser,
   onLogout,
   onOpenProfile,
@@ -72,22 +70,16 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
           <span>Supabase Conectado</span>
         </div>
 
-        {/* Toggle between Active Data and Video Empty State */}
-        {onToggleZeroMode && (
+        {/* Botão Zerar Dados */}
+        {onClearAllData && (
           <button
             type="button"
-            onClick={onToggleZeroMode}
-            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 border ${
-              isZeroMode
-                ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
-                : 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30'
-            }`}
-            title="Alternar entre modo com dados demonstrativos ou tela vazia (como no vídeo gravado)"
+            onClick={onClearAllData}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 border bg-rose-500/10 text-rose-400 border-rose-500/30 hover:bg-rose-500/20 cursor-pointer"
+            title="Limpar todos os dados e deixar o sistema 100% vazio para produção"
           >
-            <i className={`bi ${isZeroMode ? 'bi-camera-video' : 'bi-database-check'}`} />
-            <span className="hidden lg:inline">
-              {isZeroMode ? 'Modo: Vídeo (Vazio)' : 'Modo: Com Dados'}
-            </span>
+            <i className="bi bi-trash3" />
+            <span className="hidden sm:inline">Zerar Dados</span>
           </button>
         )}
 
